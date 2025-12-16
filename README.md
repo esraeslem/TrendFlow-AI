@@ -1,32 +1,43 @@
-# TrendFlow-AI
-# 📈 TrendFlow: AI-Powered Supply Chain Optimizer
+# TrendFlow: Profit-Aware Demand Forecasting for Fashion Retail
 
-![Python](https://img.shields.io/badge/Python-3.9%2B-blue)
-![Streamlit](https://img.shields.io/badge/Frontend-Streamlit-red)
-![AI](https://img.shields.io/badge/Model-Facebook_Prophet-orange)
-![Status](https://img.shields.io/badge/Status-Prototype_Complete-success)
+## Abstract (3-4 sentences)
+[Your contribution in academic language]
 
-**TrendFlow** is an end-to-end B2B dashboard designed to help fashion retailers optimize inventory. It bridges the gap between **Time-Series Forecasting** and **Operations Research** (Newsvendor Model) to recommend the mathematically optimal order quantity.
+## Key Features
+- Time-series forecasting with seasonality detection
+- Newsvendor Model optimization
+- Interactive decision support dashboard
+- 95% confidence interval demand projection
 
----
+## Installation
+[Step-by-step setup instructions]
 
-## 🧠 The Problem
-Fashion retailers face a classic dilemma:
-* **Overstocking:** Leads to markdowns and waste.
-* **Understocking:** Leads to missed revenue and dissatisfied customers.
+## Quick Start
+[Code example to run]
 
-Traditional Excel methods fail to capture seasonality and demand spikes (e.g., "Floral Dresses" in Summer).
+## Methodology
+### Forecasting Component
+- Facebook Prophet for time-series
+- Handles holidays, seasonality, trends
 
----
+### Optimization Component  
+- Newsvendor Model: Q* = F^(-1)(p/(p+c))
+- Where p = profit margin, c = cost
+- Maximizes expected profit, not just accuracy
 
-## ⚙️ Technical Architecture
+## Results
+[Tables showing performance vs baselines]
 
-```mermaid
-graph TD;
-    A[Synthetic Data Generator] -->|Sales + Social Mentions| B(Data Preprocessing);
-    B --> C{Facebook Prophet AI};
-    C -->|Forecast| D[Streamlit Dashboard];
-    D --> E[Profit Optimizer Logic];
-    E -->|Newsvendor Model| F[Final Order Recommendation];
-    style C fill:#f9f,stroke:#333,stroke-width:2px
-    style F fill:#bbf,stroke:#333,stroke-width:2px
+## Dataset
+- Source: Synthetic/Real (specify)
+- Size: X samples, Y products, Z months
+- Features: sales, social mentions, seasonality
+
+## Citation
+[BibTeX format]
+
+## License
+MIT License
+
+## Contact
+[Your email/LinkedIn]
