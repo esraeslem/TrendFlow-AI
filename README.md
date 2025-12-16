@@ -1,94 +1,39 @@
-# TrendFlow: Profit-Aware Demand Forecasting for Fashion Retail
+# TrendFlow-AI: Stochastic Supply Chain Optimization
 
-## Abstract (3-4 sentences)
-[Your contribution in academic language]
+![Python](https://img.shields.io/badge/Python-3.9%2B-blue)
+![Prophet](https://img.shields.io/badge/Model-Facebook_Prophet-orange)
+![Optimization](https://img.shields.io/badge/Method-Newsvendor_Model-green)
+![Status](https://img.shields.io/badge/Status-Research_Prototype-success)
 
-## Key Features
-- Time-series forecasting with seasonality detection
-- Newsvendor Model optimization
-- Interactive decision support dashboard
-- 95% confidence interval demand projection
+**TrendFlow** is a decision-support system that bridges the gap between **Time-Series Forecasting** and **Operations Research**. Unlike traditional dashboards that simply visualize sales data, TrendFlow uses the **Newsvendor Model** to calculate the mathematically optimal inventory level ($Q^*$) that maximizes expected profit under demand uncertainty.
 
-## Installation
-[Step-by-step setup instructions]
+## 🧠 The Methodology
 
-## Quick Start
-def calculate_optimal_order_quantity(
-    demand_forecast: float,
-    unit_cost: float,
-    profit_margin: float,
-    confidence_interval: tuple = None
-) -> dict:
-    """
-    Calculate optimal order quantity using Newsvendor Model.
-    
-    The Newsvendor Model maximizes expected profit by balancing
-    overstocking costs (c) against understocking costs (p).
-    
-    Formula: Q* = F^(-1)(p / (p + c))
-    Where F^(-1) is the inverse CDF of demand distribution.
-    
-    Args:
-        demand_forecast: Mean predicted demand from Prophet
-        unit_cost: Cost per unit (overstocking penalty)
-        profit_margin: Profit per unit sold (understocking penalty)
-        confidence_interval: Optional (lower, upper) bounds from Prophet
-        
-    Returns:
-        dict: {
-            'optimal_quantity': float,
-            'expected_profit': float,
-            'service_level': float (critical ratio)
-        }
-        
-    Example:
-        >>> calculate_optimal_order_quantity(100, 20, 30)
-        {'optimal_quantity': 120, 'expected_profit': 2400, 'service_level': 0.6}
-        
-    References:
-        Schweitzer & Cachon (2000). "Decision Bias in the Newsvendor Problem"
-    """
-    critical_ratio = profit_margin / (profit_margin + unit_cost)
-    
-    # If confidence interval provided, use it; else use mean
-    if confidence_interval:
-        lower, upper = confidence_interval
-        # Map critical ratio to demand distribution
-        optimal_qty = lower + critical_ratio * (upper - lower)
-    else:
-        optimal_qty = demand_forecast * critical_ratio
-        
-    expected_profit = optimal_qty * profit_margin - unit_cost * max(0, optimal_qty - demand_forecast)
-    
-    return {
-        'optimal_quantity': round(optimal_qty),
-        'expected_profit': round(expected_profit, 2),
-        'service_level': critical_ratio
-    }
+### 1. Probabilistic Forecasting (The Data Science)
+We utilize **Facebook Prophet** to decompose time-series data into trend, seasonality (yearly/weekly), and holiday effects. Crucially, we extract the uncertainty intervals ($\hat{y}_{lower}, \hat{y}_{upper}$) to approximate the demand probability distribution $D \sim N(\mu, \sigma^2)$.
 
-## Methodology
-### Forecasting Component
-- Facebook Prophet for time-series
-- Handles holidays, seasonality, trends
+### 2. Stochastic Optimization (The Management)
+To determine the optimal order quantity, we apply the **Newsvendor Model**, solving for the critical fractal where the marginal cost of understocking equals the marginal cost of overstocking.
 
-### Optimization Component  
-- Newsvendor Model: Q* = F^(-1)(p/(p+c))
-- Where p = profit margin, c = cost
-- Maximizes expected profit, not just accuracy
+**Unit Economics:**
+* $C_u = P - C$ (Cost of Understocking / Lost Margin)
+* $C_o = C - S$ (Cost of Overstocking / Waste)
 
-## Results
-[Tables showing performance vs baselines]
+**Critical Ratio:**
+$$CR = \frac{C_u}{C_u + C_o}$$
 
-## Dataset
-- Source: Synthetic/Real (specify)
-- Size: X samples, Y products, Z months
-- Features: sales, social mentions, seasonality
+**Optimal Quantity ($Q^*$):**
+$$Q^* = F^{-1}(CR)$$
+*Where $F^{-1}$ is the inverse CDF of the forecasted demand distribution.*
 
-## Citation
-[BibTeX format]
+## 🚀 Features
+* **Dynamic Seasonality Detection:** Automatically identifies peak seasons (e.g., Summer for "Floral Dresses").
+* **Unit Economics Input:** Allows managers to input Price, Cost, and Salvage Value to adjust risk tolerance.
+* **Automated Safety Stock:** Dynamically adjusts buffers based on forecast variance ($\sigma$).
 
-## License
-MIT License
+## 🛠️ Installation & Usage
 
-## Contact
-[Your email/LinkedIn]
+1. **Clone the repository**
+   ```bash
+   git clone [https://github.com/esraeslem/TrendFlow-AI.git](https://github.com/esraeslem/TrendFlow-AI.git)
+   cd TrendFlow-AI
