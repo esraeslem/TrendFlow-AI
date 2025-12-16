@@ -1,0 +1,16 @@
+cat > .gitignore << EOF
+__pycache__/
+*.pyc
+*.pyo
+.DS_Store
+.env
+venv/
+*.log
+.streamlit/
+*.ipynb_checkpoints/
+data/processed/
+models/
+EOF
+
+git add .gitignore
+git commit -m "Add gitignore"
