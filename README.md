@@ -303,6 +303,7 @@ Operations Research + Machine Learning + Fashion Retail
 * [API Reference](#-getting-started) - Function and class documentation
 * [User Guide](#-getting-started) - Step-by-step usage instructions
 * [Data Description](#-evaluation-protocol) - Dataset schema and generation process
+
 ## 🤝 Contributing
 
 Contributions are welcome! Areas for improvement:
