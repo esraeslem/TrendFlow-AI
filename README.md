@@ -299,10 +299,10 @@ Operations Research + Machine Learning + Fashion Retail
 
 ## 📖 Documentation
 
-- [Methodology Details](#-two-stage-architecture)
-- [API Reference](#-getting-started)
-- [User Guide](#-getting-started)
-- [Data Description](#-evaluation-protocol)
+- [Methodology Details](#methodology-details)
+- [API Reference](#user-guide)
+- [User Guide](#user-guide)
+- [Data Description](#data-description)
 
 ## 🤝 Contributing
 
