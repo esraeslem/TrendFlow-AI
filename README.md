@@ -345,8 +345,8 @@ If you use TrendFlow in your research, please cite:
 
 ## 📧 Contact
 
-**Author:** [Your Name]  
-**Email:** [your.email@metu.edu.tr]  
+**Author:** Esra Eslem Savaş  
+**Email:** [eslem.savas@metu.edu.tr]  
 **LinkedIn:** [linkedin.com/in/yourprofile]  
 **Institution:** Middle East Technical University (METU), Department of Statistics
 
