@@ -14,3 +14,5 @@ EOF
 
 git add .gitignore
 git commit -m "Add gitignore"
+train.csv
+*.zip
