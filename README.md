@@ -299,13 +299,10 @@ Operations Research + Machine Learning + Fashion Retail
 
 ## 📖 Documentation
 
-- [**Methodology Details**](#-two-stage-architecture) - Mathematical formulation and algorithms
-- [**API Reference**](#-getting-started) - Function and class documentation
-- [**User Guide**](#-getting-started) - Step-by-step usage instructions
-- [**Data Description**](data/README.md) - Dataset schema and generation process
-
----
-
+* [Methodology Details](#-two-stage-architecture) - Mathematical formulation and algorithms
+* [API Reference](#-getting-started) - Function and class documentation
+* [User Guide](#-getting-started) - Step-by-step usage instructions
+* [Data Description](#-evaluation-protocol) - Dataset schema and generation process
 ## 🤝 Contributing
 
 Contributions are welcome! Areas for improvement:
@@ -409,4 +406,5 @@ Made with ❤️ at METU
 [Report Bug](https://github.com/esraeslem/TrendFlow-AI/issues) • [Request Feature](https://github.com/esraeslem/TrendFlow-AI/issues)
 
 </div>
+
 
