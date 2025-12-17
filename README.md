@@ -299,9 +299,9 @@ Operations Research + Machine Learning + Fashion Retail
 
 ## 📖 Documentation
 
-- [**Methodology Details**](docs/methodology.md) - Mathematical formulation and algorithms
-- [**API Reference**](docs/api_reference.md) - Function and class documentation
-- [**User Guide**](docs/user_guide.md) - Step-by-step usage instructions
+- [**Methodology Details**](#-two-stage-architecture) - Mathematical formulation and algorithms
+- [**API Reference**](#-getting-started) - Function and class documentation
+- [**User Guide**](#-getting-started) - Step-by-step usage instructions
 - [**Data Description**](data/README.md) - Dataset schema and generation process
 
 ---
@@ -341,10 +341,10 @@ Contributions are welcome! Areas for improvement:
 
 If you use TrendFlow in your research, please cite:
 ```bibtex
-@software{trendflow2024,
-  author = {[Your Name]},
+@software{trendflow2025,
+  author = {Esra Eslem Savaş},
   title = {TrendFlow: Profit-Aware Demand Forecasting for Fashion Retail},
-  year = {2024},
+  year = {2025},
   publisher = {GitHub},
   url = {https://github.com/esraeslem/TrendFlow-AI},
   note = {Integrates Facebook Prophet with Newsvendor Model for inventory optimization}
