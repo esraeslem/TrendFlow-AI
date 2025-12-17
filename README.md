@@ -299,10 +299,9 @@ Operations Research + Machine Learning + Fashion Retail
 
 ## 📖 Documentation
 
-- [Methodology Details](#methodology-details)
-- [API Reference](#user-guide)
-- [User Guide](#user-guide)
-- [Data Description](#data-description)
+- [Methodology Details](docs/methodology.md)
+- [User Guide](docs/user_guide.md)
+- [Data Description](docs/data_description.md)
 
 ## 🤝 Contributing
 
