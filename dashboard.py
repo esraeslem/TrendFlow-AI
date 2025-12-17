@@ -75,18 +75,17 @@ salvage_value = st.sidebar.number_input(
 # DATA GENERATION
 # ========================================
 @st.cache_data
-def generate_synthetic_data():
-    """
-    Generate synthetic fashion retail sales data.
-    
-    Simulates realistic patterns:
-    - Seasonal trends (summer for dresses, winter for jackets)
-    - Random noise (±20 units)
-    - Product-specific base demand
-    
-    Returns:
-        pd.DataFrame: Historical sales data with columns [Date, Product, Sales]
-    """
+
+def load_data():
+
+    try:
+        df = pd.read_csv('data/raw/fashion_sales_data.csv')
+        df['Date'] = pd.to_datetime(df['Date'])
+        return df
+    except FileNotFoundError:
+        st.error("❌ Data file not found. Please run 'data_generator.py' first.")
+        return pd.DataFrame()
+
     dates = pd.date_range(start='2024-01-01', periods=365, freq='D')
     products = ['Floral Dress', 'Leather Jacket', 'Denim Jeans', 'Chunky Sneaker']
     data = []
