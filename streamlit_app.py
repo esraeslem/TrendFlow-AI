@@ -1,10 +1,25 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
+import io
+import time
 from data_generator import generate_fashion_data
 import plotly.express as px
 import plotly.graph_objs as go
 from prophet import Prophet
+
+
+# Cache-trained Prophet model to avoid re-training for the same data + params
+@st.cache_resource
+def _trained_prophet_model(data_csv: str, weekly: bool, yearly: bool, changepoint: float):
+    # data_csv is a CSV string of columns ['ds','y'] to make the cache key deterministic
+    dfp = pd.read_csv(io.StringIO(data_csv))
+    dfp['ds'] = pd.to_datetime(dfp['ds'])
+    m = Prophet(weekly_seasonality=weekly, yearly_seasonality=yearly, changepoint_prior_scale=changepoint, stan_backend='CMDSTANPY')
+    t0 = time.time()
+    m.fit(dfp)
+    elapsed = time.time() - t0
+    return m, elapsed
 
 
 @st.cache_data
