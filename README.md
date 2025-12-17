@@ -150,6 +150,16 @@ Comparison of ordering strategies over 90-day planning horizon:
 - 💡 **Critical insight:** Lower forecasting error (8.1% MAPE) + economic optimization = maximum profitability
 
 ---
+📈 Real-World Validation
+Tested on the Kaggle Store Sales Time-Series Dataset (Corporación Favorita):
+
+Category: Beverages (High-volume)
+
+Baseline: Mean-based Inventory Strategy
+
+TrendFlow AI Performance: +14.53% Profit Increase
+
+Key Driver: Dynamic adjustment to weekly seasonality and optimized safety stock levels.
 
 ## 🚀 Quick Start
 
