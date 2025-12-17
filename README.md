@@ -355,9 +355,9 @@ If you use TrendFlow in your research, please cite:
 
 ## 📧 Contact
 
-**Author:** [Your Name]  
-**Email:** [your.email@metu.edu.tr]  
-**LinkedIn:** [linkedin.com/in/yourprofile]  
+**Author:** Esra Eslem Savaş  
+**Email:** eslem.savas@metu.edu.tr  
+**LinkedIn:** www.linkedin.com/in/esra-eslem-savaş-b49980247 
 **Institution:** Middle East Technical University (METU), Department of Statistics
 
 ### Acknowledgments
@@ -396,7 +396,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - ⏳ **API Deployment** - Planned
 - ⏳ **Mobile App** - Planned
 
-**Last Updated:** December 2024
+**Last Updated:** December 2025
 
 ---
 
