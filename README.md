@@ -19,9 +19,8 @@
 Overstocking leads to markdowns; understocking leads to lost sales. **TrendFlow** forecasts daily demand with **Prophet**, turns the forecast into a full predictive distribution of demand for the planning period, and orders at the **newsvendor** optimum `Q* = F⁻¹(c_u / (c_u + c_o))`, the quantity that maximises expected profit given the cost of a lost sale versus the cost of a leftover unit.
 
 ### Highlights (from `python run_benchmark.py`, synthetic data)
-- 📊 **+7.8% profit** versus ordering a 7-day moving-average forecast, reaching **97.9%** of the profit possible with perfect foresight
-- 🎯 **Stockout rate 31%** versus 46% when ordering the Prophet mean forecast, with slightly higher profit
-- ⚖️ The newsvendor step matters most when the economics are asymmetric: **+3.9%** over ordering the mean for a low-margin product (critical ratio 0.17)
+- 📊 **+7.8% profit** versus ordering a 7-day moving-average forecast, reaching **97.9%** of the profit possible with perfect foresight. Most of this comes from Prophet's better forecast, not from the newsvendor step.
+- ⚖️ **What the newsvendor step adds:** with symmetric margins, only **+0.03%** profit over ordering the Prophet mean; with asymmetric margins (critical ratio 0.17), **+3.9%**. Its main benefit is risk: the **stockout rate falls from 46% to 31%** at no cost in profit.
 - 🧪 **Censored demand handled**: with 20% stockout days, treating stockout-day sales as missing lifts profit **+2.6%** and cuts stockout periods from 79% to 31%
 - 📏 **Calibration audit**: Prophet's 95% intervals cover only 87.5% of 30-day totals, so its uncertainty is too narrow (documented, not hidden)
 - 🖥️ Streamlit dashboard with a portfolio-level **executive summary**, CSV upload (e.g. H&M data) and a FastAPI service
@@ -405,7 +404,6 @@ MIT License - see [LICENSE](LICENSE).
 - ✅ **H&M pipeline**: tested on H&M-format data, real-data results pending
 - ✅ **CI**: lint, tests, Docker build
 - 🚧 **Real-world results** (H&M, Favorita): scripts ready, need the Kaggle downloads
-- 🚧 **Paper writing**
 
 **Last Updated:** October 2026
 
