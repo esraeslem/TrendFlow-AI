@@ -29,3 +29,9 @@ generator produces.
 
 There is no weekly pattern, no holidays, no promotions and no stockouts, so
 it is a clean test bed rather than a realistic one.
+
+## Censored-demand variant
+
+`generate_fashion_data(stockout_prob=0.2)` (or `run_benchmark.py --stockout-prob 0.2`) marks 20% of
+days as stockouts where only 50–95% of demand is sold, and adds `Demand` (true demand) and
+`InStock` columns. It is generated on the fly and not committed.

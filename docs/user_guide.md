@@ -38,3 +38,17 @@ Outputs: `experiments/results/summary.md`, `accuracy.csv`, `strategies.csv`, `de
 pytest            # full suite
 pytest -m "not slow"   # skip tests that fit Prophet
 ```
+
+## Scenarios
+```bash
+python run_benchmark.py --economics experiments/economics.json --out experiments/results/per_product_economics
+python run_benchmark.py --stockout-prob 0.2 --censoring ignore --out experiments/results/censored_ignore
+python run_benchmark.py --stockout-prob 0.2 --censoring mask   --out experiments/results/censored_mask
+```
+
+## H&M data
+```bash
+python prepare_hm.py --hm-dir data/hm --top 12    # needs transactions_train.csv + articles.csv from Kaggle
+python run_benchmark.py --data data/processed/hm_daily.csv --no-arima --out experiments/results/hm
+```
+The resulting `data/processed/hm_daily.csv` can also be uploaded in the dashboard sidebar.

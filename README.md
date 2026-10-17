@@ -19,7 +19,9 @@ Overstocking leads to markdowns; understocking leads to lost sales. **TrendFlow*
 - 📊 **+7.8% profit** versus ordering a 7-day moving-average forecast, reaching **97.9%** of the profit possible with perfect foresight
 - 🎯 **Stockout rate 31%** versus 46% when ordering the Prophet mean forecast, with slightly higher profit
 - ⚖️ The newsvendor step matters most when the economics are asymmetric: **+3.9%** over ordering the mean for a low-margin product (critical ratio 0.17)
-- 🖥️ Interactive Streamlit dashboard and a FastAPI service
+- 🧪 **Censored demand handled**: with 20% stockout days, treating stockout-day sales as missing lifts profit **+2.6%** and cuts stockout periods from 79% to 31%
+- 📏 **Calibration audit**: Prophet's 95% intervals cover only 87.5% of 30-day totals, so its uncertainty is too narrow (documented, not hidden)
+- 🖥️ Streamlit dashboard with a portfolio-level **executive summary**, CSV upload (e.g. H&M data) and a FastAPI service
 
 ---
 
@@ -107,6 +109,7 @@ All numbers below are produced by `python run_benchmark.py` (≈15 s) and saved 
 | Seasonal naive (7-day) | 33.3 | 56.6 | 22.7% | 0.37 |
 | Moving average (7-day) | 28.9 | 53.6 | 19.6% | 0.43 |
 | ARIMA(2,1,2) | 29.3 | 53.6 | 19.8% | 0.43 |
+| LightGBM (calendar + lag features) | 25.6 | 42.4 | 16.7% | 0.65 |
 | Seasonal naive (same day last year) | 25.5 | 32.7 | 17.4% | 0.79 |
 | **Prophet** | **18.6** | **24.7** | **13.5%** | **0.88** |
 
@@ -115,6 +118,7 @@ All numbers below are produced by `python run_benchmark.py` (≈15 s) and saved 
 | Strategy | Avg profit / period | vs. ordering the mean forecast | Stockout rate | Fill rate | Unsold stock |
 |----------|--------------------:|------:|------:|------:|------:|
 | Order = 7-day moving-average forecast | $311,816 | −7.21% | 58% | 93.8% | 5.4% |
+| Order = LightGBM forecast | $317,967 | −5.38% | 56% | 94.0% | 2.6% |
 | Order = same period last year | $312,900 | −6.89% | 100% | 91.1% | 0.0% |
 | Original dashboard rule (summed daily bounds) | $327,960 | −2.41% | 2% | 100.0% | 7.3% |
 | Order = Prophet upper 97.5% bound | $331,968 | −1.21% | 8% | 99.9% | 5.3% |
@@ -132,15 +136,54 @@ Same backtest, different prices (`python run_benchmark.py --price P --cost C --s
 | Default: price 120, cost 50, salvage 10 | 0.64 | +0.03% |
 | High margin: price 200, cost 50, salvage 40 | 0.94 | +0.77% |
 
+Per-product unit economics (`--economics experiments/economics.json`: seasonal dress and jacket with high margins, basic jeans with high salvage, a trend sneaker with critical ratio 0.31) give the same picture: TrendFlow beats the moving average by 1–13% per product but is within ±0.4% of ordering the Prophet mean. [Full results](experiments/results/per_product_economics/summary.md).
+
+### Calibration of Prophet's uncertainty
+
+The newsvendor quantile is only as good as the predicted distribution, so the benchmark checks how often actual demand falls inside Prophet's 95% intervals:
+
+| Check | Result | Ideal |
+|---|---:|---:|
+| Daily actuals inside the 95% band | 92.6% | 95% |
+| 30-day totals inside the 95% interval | 87.5% | 95% |
+| Periods with demand in the lowest 10% of the forecast distribution | 20.8% | 10% |
+| Periods with demand in the highest 10% of the forecast distribution | 12.5% | 10% |
+
+Daily bands are close to nominal, but the 30-day totals are **too confident**: Prophet assumes daily errors are independent, so they average out more than real errors do. Demand also lands in the low tail twice as often as it should (a slight upward bias after seasonal switches). Widening the total-demand distribution using backtested errors (conformal calibration) is the natural next step.
+
+### Censored demand (stockouts)
+
+Real sales data understates demand on days the shelf ran empty. `--stockout-prob 0.2` regenerates the data with 20% stockout days (50–95% of demand served) and records true demand for scoring:
+
+| Training data | TrendFlow avg profit / period | Stockout rate | Fill rate | Prophet MAE vs. true demand |
+|---|---:|---:|---:|---:|
+| Raw sales (stockouts ignored) | $324,855 | 79% | 94.9% | 21.2 |
+| **Stockout days masked as missing** (`--censoring mask`) | **$333,238 (+2.6%)** | **31%** | **98.5%** | **19.5** |
+
+Training on censored sales teaches the model that demand is lower than it is, so it under-orders almost every period. Masking those days removes the bias. [Results: ignore](experiments/results/censored_ignore/summary.md) · [mask](experiments/results/censored_mask/summary.md).
+
 **Key findings**
-- Most of the profit gain comes from **better forecasting**: Prophet is the only model that captures the yearly seasonality and trend, and ordering on it earns 7.8% more than ordering on a moving average.
+- Most of the profit gain comes from **better forecasting**: Prophet is the only model that captures the yearly seasonality and trend, and ordering on it earns 7.8% more than ordering on a moving average. LightGBM with lag features comes second; tree models cannot extrapolate the step trend.
 - The newsvendor step adds little when the critical ratio is near 0.5 and uncertainty is small relative to demand (here the 95% interval of a 30-day total is only about ±7% of the mean). Its value grows with **asymmetric economics** (+3.9% for a low-margin product) and would grow further on noisier, real demand.
 - The **original dashboard rule** (interpolating across summed daily bounds) over-ordered and lost 2.4% to 9% versus ordering the mean, depending on economics; it has been replaced.
-- **Limitations:** the data is synthetic and clean (no weekly pattern, holidays, promotions or censored demand), and 48 decisions is a modest sample. In the high-margin scenario, realised stockouts (12%) exceeded the 6% target, suggesting Prophet's predictive intervals are somewhat too narrow in the tails.
+- **Data quality beats optimisation**: ignoring stockouts costs more (−2.6%) than the newsvendor step gains in the default setting.
+- **Limitations:** the main dataset is synthetic and clean (no weekly pattern, holidays or promotions), and 48 decisions is a modest sample. Prophet's intervals are too narrow, so in-stock probabilities are optimistic (e.g. 12% realised stockouts against a 6% target in the high-margin scenario).
 
 ---
 
-## 📈 Real-World Validation
+## 🛍️ H&M Fashion Data
+
+`prepare_hm.py` turns the Kaggle [H&M Personalized Fashion Recommendations](https://www.kaggle.com/competitions/h-and-m-personalized-fashion-recommendations/data) transactions (31M rows, Sep 2018 – Sep 2020) into daily units per product type, ready for the same backtest or the dashboard's CSV upload:
+
+```bash
+# put transactions_train.csv and articles.csv in data/hm/ (download from Kaggle)
+python prepare_hm.py --hm-dir data/hm --top 12                  # daily units per product type
+python run_benchmark.py --data data/processed/hm_daily.csv --no-arima --out experiments/results/hm
+```
+
+H&M prices are normalised and there is no inventory data, so unit economics must be assumed (`--economics`) and stockouts cannot be flagged. The pipeline is tested on files with H&M's exact schema; results on the real data will be added here once run.
+
+## 📈 Real-World Validation (Favorita)
 
 `validate_real_world.py` runs the same pipeline on the Kaggle [Store Sales: Time Series Forecasting](https://www.kaggle.com/competitions/store-sales-time-series-forecasting/data) dataset (Corporación Favorita; default: store 44, BEVERAGES, last 60 days held out). It compares ordering the training mean, the Prophet mean forecast, and the per-day newsvendor quantile.
 
@@ -168,9 +211,18 @@ pip install -r requirements.txt                    # add requirements-dev.txt fo
 | Dashboard (Turkish, with baseline model switch) | `streamlit run streamlit_app.py` |
 | REST API | `uvicorn api:app --reload --port 8000` → http://localhost:8000/docs |
 | Reproduce the results | `python run_benchmark.py` |
+| Per-product economics / censored demand | `python run_benchmark.py --economics experiments/economics.json` · `--stockout-prob 0.2 --censoring mask` |
+| Prepare H&M data | `python prepare_hm.py --hm-dir data/hm` |
 | Regenerate the dataset | `python data_generator.py` |
 | Tests | `pip install -r requirements-dev.txt && pytest` |
 | Docker | `docker build -t trendflow-ai . && docker run -p 8501:8501 trendflow-ai` |
+
+### Deploy the dashboard (free)
+
+1. Push the repo to GitHub.
+2. Go to [share.streamlit.io](https://share.streamlit.io), choose **Create app → Deploy a public app from GitHub**.
+3. Select `esraeslem/TrendFlow-AI`, branch `main`, main file `dashboard.py`, Python 3.11, and deploy. `requirements.txt` is installed automatically.
+4. Add the app URL to the top of this README.
 
 ### Basic usage
 
@@ -206,23 +258,25 @@ TrendFlow-AI/
 ├── src/                          # Core package
 │   ├── forecasting.py            # ProphetForecaster (daily forecast + predictive samples)
 │   ├── optimization.py           # NewsvendorOptimizer, realized_profit
-│   ├── baselines.py              # Naive, moving average, seasonal naive, ARIMA
+│   ├── baselines.py              # Naive, moving average, seasonal naive, ARIMA, LightGBM
 │   ├── metrics.py                # MAE/RMSE/MAPE/R², stockout & fill rates
-│   └── data_processing.py        # Synthetic data generator and loaders
+│   └── data_processing.py        # Synthetic data (optional stockouts), loaders, censoring helpers
 ├── data/
 │   ├── raw/fashion_sales_data.csv
 │   └── README.md                 # How the synthetic data is generated
 ├── experiments/
 │   ├── baseline_models.py        # Re-exports src.baselines
-│   └── results/                  # Output of run_benchmark.py (summary.md, CSVs)
+│   ├── economics.json            # Illustrative per-product price / cost / salvage
+│   └── results/                  # Output of run_benchmark.py (main run + scenario subfolders)
 ├── tests/                        # pytest suite (optimisation, forecasting, data, API)
 ├── notebooks/demo_data_generation.ipynb
 ├── research_modules/causal_supply_chain.R   # Causal DAG of the supply-chain problem
 ├── docs/                         # methodology.md, user_guide.md, data_description.md
-├── dashboard.py                  # Streamlit dashboard (English)
+├── dashboard.py                  # Streamlit dashboard: executive summary + product deep-dive, CSV upload
 ├── streamlit_app.py              # Streamlit dashboard (Turkish, model switch)
 ├── api.py                        # FastAPI service
 ├── run_benchmark.py              # Rolling-origin backtest → experiments/results/
+├── prepare_hm.py                 # H&M Kaggle data → daily units per product type
 ├── validate_real_world.py        # Kaggle Favorita validation
 ├── model_comparison.py           # Single-series Prophet vs ARIMA vs MA helper
 ├── data_generator.py             # CLI wrapper for the data generator
@@ -264,7 +318,7 @@ Operations Research + Machine Learning + Fashion Retail
 
 | Category | Technology | Purpose |
 |----------|-----------|---------|
-| **Forecasting** | Prophet, statsmodels | Time-series models and ARIMA baseline |
+| **Forecasting** | Prophet, statsmodels, LightGBM | Time-series models and baselines |
 | **Optimization** | NumPy, SciPy | Newsvendor quantiles and expected profit |
 | **Dashboard** | Streamlit, Plotly | Interactive interface |
 | **API** | FastAPI, Pydantic, Uvicorn | REST endpoints |
@@ -282,10 +336,10 @@ Operations Research + Machine Learning + Fashion Retail
 ## 🤝 Contributing
 
 ### High Priority
-- [ ] Re-run real-world validation on the Kaggle Favorita data and report results
-- [ ] Calibration check of Prophet's predictive intervals (coverage of the 95% band)
+- [ ] Run the H&M and Favorita pipelines on the real data and report results
+- [ ] Conformal calibration of the total-demand distribution (fixes the too-narrow intervals)
 - [ ] Multi-period planning horizon and supplier lead times
-- [ ] Deep learning baselines (LSTM, N-BEATS)
+- [ ] Deep learning baselines (N-BEATS, TFT)
 
 ### Medium Priority
 - [ ] Promotional and holiday demand modeling
@@ -343,9 +397,10 @@ MIT License - see [LICENSE](LICENSE).
 - ✅ **Core implementation** (`src/`): forecasting, newsvendor optimisation, baselines, metrics
 - ✅ **Dashboards**: Streamlit (English and Turkish)
 - ✅ **REST API**: FastAPI, with Dockerfile
-- ✅ **Reproducible benchmark** on synthetic data
+- ✅ **Reproducible benchmark**: accuracy, interval calibration, per-product economics, censored demand
+- ✅ **H&M pipeline**: tested on H&M-format data, real-data results pending
 - ✅ **CI**: lint, tests, Docker build
-- 🚧 **Real-world validation**: script ready, results pending
+- 🚧 **Real-world results** (H&M, Favorita): scripts ready, need the Kaggle downloads
 - 🚧 **Paper writing**
 
 **Last Updated:** October 2026

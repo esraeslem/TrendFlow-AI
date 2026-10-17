@@ -1,0 +1,8 @@
+{
+  "_comment": "Illustrative unit economics in USD. Seasonal fashion has high margins but little salvage value; basics carry over between seasons (high salvage); the trend sneaker is discounted heavily, so leftovers are expensive.",
+  "default":        {"price": 120, "cost": 50, "salvage": 10},
+  "Floral Dress":   {"price": 90,  "cost": 30, "salvage": 10},
+  "Leather Jacket": {"price": 250, "cost": 110, "salvage": 60},
+  "Denim Jeans":    {"price": 60,  "cost": 35, "salvage": 25},
+  "Chunky Sneaker": {"price": 80,  "cost": 60, "salvage": 15}
+}

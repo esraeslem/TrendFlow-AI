@@ -52,7 +52,11 @@ class ProphetForecaster:
 
         # cmdstanpy resets its level on import, so silence it here
         logging.getLogger("cmdstanpy").setLevel(logging.WARNING)
-        self.history = _to_prophet_frame(df, date_col, value_col)
+        full = _to_prophet_frame(df, date_col, value_col)
+        # forecasts start the day after the last *observed date*, even if that
+        # day's value is missing (e.g. a stockout day masked as NaN)
+        self.last_date = full["ds"].max()
+        self.history = full.dropna(subset=["y"]).reset_index(drop=True)
         self.model = Prophet(**self.params)
         self.model.fit(self.history)
         return self
@@ -62,8 +66,8 @@ class ProphetForecaster:
             raise RuntimeError("Call fit() first")
         if periods < 1:
             raise ValueError("periods must be >= 1")
-        future = self.model.make_future_dataframe(periods=periods, include_history=False)
-        return future
+        start = self.last_date + pd.Timedelta(days=1)
+        return pd.DataFrame({"ds": pd.date_range(start, periods=periods, freq="D")})
 
     def predict(self, periods: int = 30) -> pd.DataFrame:
         """Daily forecast for the next ``periods`` days (future rows only)."""

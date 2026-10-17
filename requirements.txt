@@ -10,3 +10,4 @@ fastapi>=0.110
 uvicorn>=0.24
 pydantic>=2.5
 tabulate>=0.9
+lightgbm>=4.0
