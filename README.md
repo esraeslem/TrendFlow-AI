@@ -1,5 +1,6 @@
 # 📈 TrendFlow: Profit-Aware Demand Forecasting for Fashion Retail
 
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://trendflow-ai-ejce3vtwm8zlggfnarjzps.streamlit.app/)
 [![CI](https://github.com/esraeslem/TrendFlow-AI/actions/workflows/main.yml/badge.svg)](https://github.com/esraeslem/TrendFlow-AI/actions/workflows/main.yml)
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue)](https://www.python.org/)
 [![Streamlit](https://img.shields.io/badge/Frontend-Streamlit-red)](https://streamlit.io/)
@@ -7,6 +8,8 @@
 [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 [![Status](https://img.shields.io/badge/Status-Research_Prototype-yellow)](https://github.com/esraeslem/TrendFlow-AI)
 
+> 🚀 **[Live demo](https://trendflow-ai-ejce3vtwm8zlggfnarjzps.streamlit.app/)** · upload your own sales CSV or explore the synthetic data.
+>
 > Combines time-series forecasting (Prophet) with the newsvendor model from operations research to decide how much stock to order, not just how much will sell.
 
 ---
@@ -219,10 +222,11 @@ pip install -r requirements.txt                    # add requirements-dev.txt fo
 
 ### Deploy the dashboard (free)
 
+Live version: https://trendflow-ai-ejce3vtwm8zlggfnarjzps.streamlit.app/
+
 1. Push the repo to GitHub.
 2. Go to [share.streamlit.io](https://share.streamlit.io), choose **Create app → Deploy a public app from GitHub**.
 3. Select `esraeslem/TrendFlow-AI`, branch `main`, main file `dashboard.py`, Python 3.11, and deploy. `requirements.txt` is installed automatically.
-4. Add the app URL to the top of this README.
 
 ### Basic usage
 
