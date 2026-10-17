@@ -1,0 +1,9 @@
+strategy,n_decisions,avg_profit_per_period,stockout_rate,service_level,fill_rate,leftover_pct,profit_vs_mean_forecast_pct,beats_mean_forecast_pct_of_periods,pct_of_perfect_foresight_profit
+Perfect foresight (upper limit),48,333692.396,0.0,100.0,100.0,0.0,1.899,100.0,100.0
+TrendFlow: newsvendor on Prophet predictive samples,48,327646.472,37.5,62.5,98.993,2.41,0.053,39.583,98.188
+Order = Prophet mean forecast,48,327473.383,45.833,54.167,98.771,1.628,0.0,0.0,98.136
+Order = Prophet upper 97.5% bound,48,324086.606,8.333,91.667,99.857,5.325,-1.034,20.833,97.121
+Original dashboard rule (summed daily bounds),48,315911.189,25.0,75.0,97.685,9.644,-3.531,14.583,94.671
+Order = same period last year,48,305120.729,100.0,0.0,91.097,0.0,-6.826,6.25,91.438
+Order = LightGBM forecast,48,301740.07,56.25,43.75,94.014,2.615,-7.858,37.5,90.425
+Order = moving-average (7-day) forecast,48,296881.176,58.333,41.667,93.819,5.363,-9.342,33.333,88.969

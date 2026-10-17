@@ -1,0 +1,385 @@
+product,origin,strategy,critical_ratio,order_qty,demand,observed_sales,profit
+Chunky Sneaker,2024-01-01,Order = moving-average (7-day) forecast,0.64,4341.43,4894.0,4565.0,303900.0
+Chunky Sneaker,2024-01-01,Order = LightGBM forecast,0.64,4561.07,4894.0,4565.0,319275.23
+Chunky Sneaker,2024-01-01,Order = same period last year,0.64,4617.0,4894.0,4565.0,323190.0
+Chunky Sneaker,2024-01-01,Order = Prophet mean forecast,0.64,4030.83,4894.0,4565.0,282158.04
+Chunky Sneaker,2024-01-01,Order = Prophet upper 97.5% bound,0.64,4241.7,4894.0,4565.0,296918.95
+Chunky Sneaker,2024-01-01,Original dashboard rule (summed daily bounds),0.64,4340.66,4894.0,4565.0,303846.48
+Chunky Sneaker,2024-01-01,TrendFlow: newsvendor on Prophet predictive samples,0.64,4071.61,4894.0,4565.0,285012.67
+Chunky Sneaker,2024-01-01,Perfect foresight (upper limit),0.64,4894.0,4894.0,4565.0,342580.0
+Chunky Sneaker,2024-01-31,Order = moving-average (7-day) forecast,0.64,5018.57,4923.0,4509.0,340787.14
+Chunky Sneaker,2024-01-31,Order = LightGBM forecast,0.64,4748.36,4923.0,4509.0,332385.47
+Chunky Sneaker,2024-01-31,Order = same period last year,0.64,4562.0,4923.0,4509.0,319340.0
+Chunky Sneaker,2024-01-31,Order = Prophet mean forecast,0.64,4816.9,4923.0,4509.0,337182.71
+Chunky Sneaker,2024-01-31,Order = Prophet upper 97.5% bound,0.64,5030.17,4923.0,4509.0,340323.36
+Chunky Sneaker,2024-01-31,Original dashboard rule (summed daily bounds),0.64,5130.26,4923.0,4509.0,336319.76
+Chunky Sneaker,2024-01-31,TrendFlow: newsvendor on Prophet predictive samples,0.64,4858.14,4923.0,4509.0,340069.81
+Chunky Sneaker,2024-01-31,Perfect foresight (upper limit),0.64,4923.0,4923.0,4509.0,344610.0
+Chunky Sneaker,2024-03-01,Order = moving-average (7-day) forecast,0.64,5243.57,4999.0,4767.0,340147.14
+Chunky Sneaker,2024-03-01,Order = LightGBM forecast,0.64,5111.9,4999.0,4767.0,345413.96
+Chunky Sneaker,2024-03-01,Order = same period last year,0.64,4493.0,4999.0,4767.0,314510.0
+Chunky Sneaker,2024-03-01,Order = Prophet mean forecast,0.64,4775.68,4999.0,4767.0,334297.4
+Chunky Sneaker,2024-03-01,Order = Prophet upper 97.5% bound,0.64,4994.33,4999.0,4767.0,349603.28
+Chunky Sneaker,2024-03-01,Original dashboard rule (summed daily bounds),0.64,5096.95,4999.0,4767.0,346012.01
+Chunky Sneaker,2024-03-01,TrendFlow: newsvendor on Prophet predictive samples,0.64,4817.96,4999.0,4767.0,337257.39
+Chunky Sneaker,2024-03-01,Perfect foresight (upper limit),0.64,4999.0,4999.0,4767.0,349930.0
+Chunky Sneaker,2024-03-31,Order = moving-average (7-day) forecast,0.64,4545.0,4937.0,4641.0,318150.0
+Chunky Sneaker,2024-03-31,Order = LightGBM forecast,0.64,4745.15,4937.0,4641.0,332160.33
+Chunky Sneaker,2024-03-31,Order = same period last year,0.64,4440.5,4937.0,4641.0,310835.0
+Chunky Sneaker,2024-03-31,Order = Prophet mean forecast,0.64,4804.18,4937.0,4641.0,336292.94
+Chunky Sneaker,2024-03-31,Order = Prophet upper 97.5% bound,0.64,5025.09,4937.0,4641.0,342066.45
+Chunky Sneaker,2024-03-31,Original dashboard rule (summed daily bounds),0.64,5128.76,4937.0,4641.0,337919.56
+Chunky Sneaker,2024-03-31,TrendFlow: newsvendor on Prophet predictive samples,0.64,4846.91,4937.0,4641.0,339283.36
+Chunky Sneaker,2024-03-31,Perfect foresight (upper limit),0.64,4937.0,4937.0,4641.0,345590.0
+Chunky Sneaker,2024-04-30,Order = moving-average (7-day) forecast,0.64,4572.86,4892.0,4784.0,320100.0
+Chunky Sneaker,2024-04-30,Order = LightGBM forecast,0.64,4644.71,4892.0,4784.0,325129.57
+Chunky Sneaker,2024-04-30,Order = same period last year,0.64,4525.0,4892.0,4784.0,316750.0
+Chunky Sneaker,2024-04-30,Order = Prophet mean forecast,0.64,4951.25,4892.0,4784.0,340070.19
+Chunky Sneaker,2024-04-30,Order = Prophet upper 97.5% bound,0.64,5171.58,4892.0,4784.0,331256.68
+Chunky Sneaker,2024-04-30,Original dashboard rule (summed daily bounds),0.64,5274.99,4892.0,4784.0,327120.41
+Chunky Sneaker,2024-04-30,TrendFlow: newsvendor on Prophet predictive samples,0.64,4993.86,4892.0,4784.0,338365.76
+Chunky Sneaker,2024-04-30,Perfect foresight (upper limit),0.64,4892.0,4892.0,4784.0,342440.0
+Chunky Sneaker,2024-05-30,Order = moving-average (7-day) forecast,0.64,4547.14,4964.0,4683.0,318300.0
+Chunky Sneaker,2024-05-30,Order = LightGBM forecast,0.64,4578.26,4964.0,4683.0,320478.28
+Chunky Sneaker,2024-05-30,Order = same period last year,0.64,4507.0,4964.0,4683.0,315490.0
+Chunky Sneaker,2024-05-30,Order = Prophet mean forecast,0.64,4930.7,4964.0,4683.0,345148.71
+Chunky Sneaker,2024-05-30,Order = Prophet upper 97.5% bound,0.64,5152.36,4964.0,4683.0,339945.64
+Chunky Sneaker,2024-05-30,Original dashboard rule (summed daily bounds),0.64,5256.39,4964.0,4683.0,335784.49
+Chunky Sneaker,2024-05-30,TrendFlow: newsvendor on Prophet predictive samples,0.64,4973.56,4964.0,4683.0,347097.48
+Chunky Sneaker,2024-05-30,Perfect foresight (upper limit),0.64,4964.0,4964.0,4683.0,347480.0
+Chunky Sneaker,2024-06-29,Order = moving-average (7-day) forecast,0.64,5063.57,4907.0,4484.0,337227.14
+Chunky Sneaker,2024-06-29,Order = LightGBM forecast,0.64,4773.39,4907.0,4484.0,334137.24
+Chunky Sneaker,2024-06-29,Order = same period last year,0.64,4502.0,4907.0,4484.0,315140.0
+Chunky Sneaker,2024-06-29,Order = Prophet mean forecast,0.64,4959.2,4907.0,4484.0,341401.94
+Chunky Sneaker,2024-06-29,Order = Prophet upper 97.5% bound,0.64,5177.23,4907.0,4484.0,332680.63
+Chunky Sneaker,2024-06-29,Original dashboard rule (summed daily bounds),0.64,5279.56,4907.0,4484.0,328587.57
+Chunky Sneaker,2024-06-29,TrendFlow: newsvendor on Prophet predictive samples,0.64,5001.37,4907.0,4484.0,339715.4
+Chunky Sneaker,2024-06-29,Perfect foresight (upper limit),0.64,4907.0,4907.0,4484.0,343490.0
+Chunky Sneaker,2024-07-29,Order = moving-average (7-day) forecast,0.64,4885.71,4947.0,4747.0,342000.0
+Chunky Sneaker,2024-07-29,Order = LightGBM forecast,0.64,4734.51,4947.0,4747.0,331415.87
+Chunky Sneaker,2024-07-29,Order = same period last year,0.64,4778.0,4947.0,4747.0,334460.0
+Chunky Sneaker,2024-07-29,Order = Prophet mean forecast,0.64,5106.03,4947.0,4747.0,339928.93
+Chunky Sneaker,2024-07-29,Order = Prophet upper 97.5% bound,0.64,5321.59,4947.0,4747.0,331306.53
+Chunky Sneaker,2024-07-29,Original dashboard rule (summed daily bounds),0.64,5422.75,4947.0,4747.0,327259.95
+Chunky Sneaker,2024-07-29,TrendFlow: newsvendor on Prophet predictive samples,0.64,5147.71,4947.0,4747.0,338261.46
+Chunky Sneaker,2024-07-29,Perfect foresight (upper limit),0.64,4947.0,4947.0,4747.0,346290.0
+Chunky Sneaker,2024-08-28,Order = moving-average (7-day) forecast,0.64,4969.29,4944.0,4712.0,345068.57
+Chunky Sneaker,2024-08-28,Order = LightGBM forecast,0.64,4846.51,4944.0,4712.0,339255.6
+Chunky Sneaker,2024-08-28,Order = same period last year,0.64,4518.5,4944.0,4712.0,316295.0
+Chunky Sneaker,2024-08-28,Order = Prophet mean forecast,0.64,4956.26,4944.0,4712.0,345589.76
+Chunky Sneaker,2024-08-28,Order = Prophet upper 97.5% bound,0.64,5173.8,4944.0,4712.0,336888.14
+Chunky Sneaker,2024-08-28,Original dashboard rule (summed daily bounds),0.64,5275.89,4944.0,4712.0,332804.36
+Chunky Sneaker,2024-08-28,TrendFlow: newsvendor on Prophet predictive samples,0.64,4998.33,4944.0,4712.0,343906.94
+Chunky Sneaker,2024-08-28,Perfect foresight (upper limit),0.64,4944.0,4944.0,4712.0,346080.0
+Chunky Sneaker,2024-09-27,Order = moving-average (7-day) forecast,0.64,4804.29,4919.0,4629.0,336300.0
+Chunky Sneaker,2024-09-27,Order = LightGBM forecast,0.64,4791.98,4919.0,4629.0,335438.79
+Chunky Sneaker,2024-09-27,Order = same period last year,0.64,4471.5,4919.0,4629.0,313005.0
+Chunky Sneaker,2024-09-27,Order = Prophet mean forecast,0.64,4803.02,4919.0,4629.0,336211.5
+Chunky Sneaker,2024-09-27,Order = Prophet upper 97.5% bound,0.64,5018.15,4919.0,4629.0,340363.91
+Chunky Sneaker,2024-09-27,Original dashboard rule (summed daily bounds),0.64,5119.12,4919.0,4629.0,336325.39
+Chunky Sneaker,2024-09-27,TrendFlow: newsvendor on Prophet predictive samples,0.64,4844.63,4919.0,4629.0,339123.77
+Chunky Sneaker,2024-09-27,Perfect foresight (upper limit),0.64,4919.0,4919.0,4629.0,344330.0
+Chunky Sneaker,2024-10-27,Order = moving-average (7-day) forecast,0.64,5091.43,5010.0,4667.0,347442.86
+Chunky Sneaker,2024-10-27,Order = LightGBM forecast,0.64,5067.77,5010.0,4667.0,348389.03
+Chunky Sneaker,2024-10-27,Order = same period last year,0.64,4596.5,5010.0,4667.0,321755.0
+Chunky Sneaker,2024-10-27,Order = Prophet mean forecast,0.64,5042.76,5010.0,4667.0,349389.49
+Chunky Sneaker,2024-10-27,Order = Prophet upper 97.5% bound,0.64,5259.62,5010.0,4667.0,340715.16
+Chunky Sneaker,2024-10-27,Original dashboard rule (summed daily bounds),0.64,5361.39,5010.0,4667.0,336644.21
+Chunky Sneaker,2024-10-27,TrendFlow: newsvendor on Prophet predictive samples,0.64,5084.7,5010.0,4667.0,347711.98
+Chunky Sneaker,2024-10-27,Perfect foresight (upper limit),0.64,5010.0,5010.0,4667.0,350700.0
+Chunky Sneaker,2024-11-26,Order = moving-average (7-day) forecast,0.64,4890.0,4770.0,4515.0,329100.0
+Chunky Sneaker,2024-11-26,Order = LightGBM forecast,0.64,5181.46,4770.0,4515.0,317441.65
+Chunky Sneaker,2024-11-26,Order = same period last year,0.64,4644.0,4770.0,4515.0,325080.0
+Chunky Sneaker,2024-11-26,Order = Prophet mean forecast,0.64,4987.73,4770.0,4515.0,325190.68
+Chunky Sneaker,2024-11-26,Order = Prophet upper 97.5% bound,0.64,5203.26,4770.0,4515.0,316569.62
+Chunky Sneaker,2024-11-26,Original dashboard rule (summed daily bounds),0.64,5304.41,4770.0,4515.0,312523.57
+Chunky Sneaker,2024-11-26,TrendFlow: newsvendor on Prophet predictive samples,0.64,5029.42,4770.0,4515.0,323523.34
+Chunky Sneaker,2024-11-26,Perfect foresight (upper limit),0.64,4770.0,4770.0,4515.0,333900.0
+Denim Jeans,2024-01-01,Order = moving-average (7-day) forecast,0.64,3145.71,3455.0,3273.0,220200.0
+Denim Jeans,2024-01-01,Order = LightGBM forecast,0.64,2911.32,3455.0,3273.0,203792.11
+Denim Jeans,2024-01-01,Order = same period last year,0.64,2943.5,3455.0,3273.0,206045.0
+Denim Jeans,2024-01-01,Order = Prophet mean forecast,0.64,2565.48,3455.0,3273.0,179583.64
+Denim Jeans,2024-01-01,Order = Prophet upper 97.5% bound,0.64,2772.79,3455.0,3273.0,194095.3
+Denim Jeans,2024-01-01,Original dashboard rule (summed daily bounds),0.64,2870.08,3455.0,3273.0,200905.91
+Denim Jeans,2024-01-01,TrendFlow: newsvendor on Prophet predictive samples,0.64,2605.57,3455.0,3273.0,182390.03
+Denim Jeans,2024-01-01,Perfect foresight (upper limit),0.64,3455.0,3455.0,3273.0,241850.0
+Denim Jeans,2024-01-31,Order = moving-average (7-day) forecast,0.64,3780.0,3351.0,3268.0,217410.0
+Denim Jeans,2024-01-31,Order = LightGBM forecast,0.64,3488.51,3351.0,3268.0,229069.53
+Denim Jeans,2024-01-31,Order = same period last year,0.64,3034.0,3351.0,3268.0,212380.0
+Denim Jeans,2024-01-31,Order = Prophet mean forecast,0.64,3445.79,3351.0,3268.0,230778.34
+Denim Jeans,2024-01-31,Order = Prophet upper 97.5% bound,0.64,3655.26,3351.0,3268.0,222399.61
+Denim Jeans,2024-01-31,Original dashboard rule (summed daily bounds),0.64,3753.57,3351.0,3268.0,218467.39
+Denim Jeans,2024-01-31,TrendFlow: newsvendor on Prophet predictive samples,0.64,3486.3,3351.0,3268.0,229157.99
+Denim Jeans,2024-01-31,Perfect foresight (upper limit),0.64,3351.0,3351.0,3268.0,234570.0
+Denim Jeans,2024-03-01,Order = moving-average (7-day) forecast,0.64,3471.43,3477.0,3268.0,243000.0
+Denim Jeans,2024-03-01,Order = LightGBM forecast,0.64,3364.69,3477.0,3268.0,235528.33
+Denim Jeans,2024-03-01,Order = same period last year,0.64,2988.5,3477.0,3268.0,209195.0
+Denim Jeans,2024-03-01,Order = Prophet mean forecast,0.64,3483.06,3477.0,3268.0,243147.51
+Denim Jeans,2024-03-01,Order = Prophet upper 97.5% bound,0.64,3690.58,3477.0,3268.0,234846.95
+Denim Jeans,2024-03-01,Original dashboard rule (summed daily bounds),0.64,3787.96,3477.0,3268.0,230951.42
+Denim Jeans,2024-03-01,TrendFlow: newsvendor on Prophet predictive samples,0.64,3523.19,3477.0,3268.0,241542.28
+Denim Jeans,2024-03-01,Perfect foresight (upper limit),0.64,3477.0,3477.0,3268.0,243390.0
+Denim Jeans,2024-03-31,Order = moving-average (7-day) forecast,0.64,3490.71,3389.0,3288.0,233161.43
+Denim Jeans,2024-03-31,Order = LightGBM forecast,0.64,3489.66,3389.0,3288.0,233203.59
+Denim Jeans,2024-03-31,Order = same period last year,0.64,2983.0,3389.0,3288.0,208810.0
+Denim Jeans,2024-03-31,Order = Prophet mean forecast,0.64,3326.43,3389.0,3288.0,232849.79
+Denim Jeans,2024-03-31,Order = Prophet upper 97.5% bound,0.64,3533.77,3389.0,3288.0,231439.32
+Denim Jeans,2024-03-31,Original dashboard rule (summed daily bounds),0.64,3631.07,3389.0,3288.0,227547.02
+Denim Jeans,2024-03-31,TrendFlow: newsvendor on Prophet predictive samples,0.64,3366.52,3389.0,3288.0,235656.62
+Denim Jeans,2024-03-31,Perfect foresight (upper limit),0.64,3389.0,3389.0,3288.0,237230.0
+Denim Jeans,2024-04-30,Order = moving-average (7-day) forecast,0.64,3390.0,3516.0,3276.0,237300.0
+Denim Jeans,2024-04-30,Order = LightGBM forecast,0.64,3464.5,3516.0,3276.0,242515.21
+Denim Jeans,2024-04-30,Order = same period last year,0.64,3044.5,3516.0,3276.0,213115.0
+Denim Jeans,2024-04-30,Order = Prophet mean forecast,0.64,3506.85,3516.0,3276.0,245479.35
+Denim Jeans,2024-04-30,Order = Prophet upper 97.5% bound,0.64,3719.69,3516.0,3276.0,237972.45
+Denim Jeans,2024-04-30,Original dashboard rule (summed daily bounds),0.64,3819.58,3516.0,3276.0,233976.92
+Denim Jeans,2024-04-30,TrendFlow: newsvendor on Prophet predictive samples,0.64,3548.01,3516.0,3276.0,244839.64
+Denim Jeans,2024-04-30,Perfect foresight (upper limit),0.64,3516.0,3516.0,3276.0,246120.0
+Denim Jeans,2024-05-30,Order = moving-average (7-day) forecast,0.64,3473.57,3228.0,3036.0,216137.14
+Denim Jeans,2024-05-30,Order = LightGBM forecast,0.64,3616.75,3228.0,3036.0,210410.2
+Denim Jeans,2024-05-30,Order = same period last year,0.64,3118.5,3228.0,3036.0,218295.0
+Denim Jeans,2024-05-30,Order = Prophet mean forecast,0.64,3427.3,3228.0,3036.0,217988.17
+Denim Jeans,2024-05-30,Order = Prophet upper 97.5% bound,0.64,3638.17,3228.0,3036.0,209553.0
+Denim Jeans,2024-05-30,Original dashboard rule (summed daily bounds),0.64,3737.14,3228.0,3036.0,205594.21
+Denim Jeans,2024-05-30,TrendFlow: newsvendor on Prophet predictive samples,0.64,3468.07,3228.0,3036.0,216357.08
+Denim Jeans,2024-05-30,Perfect foresight (upper limit),0.64,3228.0,3228.0,3036.0,225960.0
+Denim Jeans,2024-06-29,Order = moving-average (7-day) forecast,0.64,3724.29,3409.0,3211.0,226018.57
+Denim Jeans,2024-06-29,Order = LightGBM forecast,0.64,3329.05,3409.0,3211.0,233033.6
+Denim Jeans,2024-06-29,Order = same period last year,0.64,3173.5,3409.0,3211.0,222145.0
+Denim Jeans,2024-06-29,Order = Prophet mean forecast,0.64,3525.34,3409.0,3211.0,233976.37
+Denim Jeans,2024-06-29,Order = Prophet upper 97.5% bound,0.64,3737.45,3409.0,3211.0,225492.13
+Denim Jeans,2024-06-29,Original dashboard rule (summed daily bounds),0.64,3836.99,3409.0,3211.0,221510.39
+Denim Jeans,2024-06-29,TrendFlow: newsvendor on Prophet predictive samples,0.64,3566.36,3409.0,3211.0,232335.61
+Denim Jeans,2024-06-29,Perfect foresight (upper limit),0.64,3409.0,3409.0,3211.0,238630.0
+Denim Jeans,2024-07-29,Order = moving-average (7-day) forecast,0.64,3837.86,3393.0,3114.0,219715.71
+Denim Jeans,2024-07-29,Order = LightGBM forecast,0.64,3265.81,3393.0,3114.0,228606.45
+Denim Jeans,2024-07-29,Order = same period last year,0.64,3080.0,3393.0,3114.0,215600.0
+Denim Jeans,2024-07-29,Order = Prophet mean forecast,0.64,3515.0,3393.0,3114.0,232629.94
+Denim Jeans,2024-07-29,Order = Prophet upper 97.5% bound,0.64,3730.34,3393.0,3114.0,224016.29
+Denim Jeans,2024-07-29,Original dashboard rule (summed daily bounds),0.64,3831.4,3393.0,3114.0,219973.82
+Denim Jeans,2024-07-29,TrendFlow: newsvendor on Prophet predictive samples,0.64,3556.65,3393.0,3114.0,230964.16
+Denim Jeans,2024-07-29,Perfect foresight (upper limit),0.64,3393.0,3393.0,3114.0,237510.0
+Denim Jeans,2024-08-28,Order = moving-average (7-day) forecast,0.64,3270.0,3498.0,3186.0,228900.0
+Denim Jeans,2024-08-28,Order = LightGBM forecast,0.64,3559.65,3498.0,3186.0,242394.1
+Denim Jeans,2024-08-28,Order = same period last year,0.64,3117.5,3498.0,3186.0,218225.0
+Denim Jeans,2024-08-28,Order = Prophet mean forecast,0.64,3521.59,3498.0,3186.0,243916.31
+Denim Jeans,2024-08-28,Order = Prophet upper 97.5% bound,0.64,3736.17,3498.0,3186.0,235333.24
+Denim Jeans,2024-08-28,Original dashboard rule (summed daily bounds),0.64,3836.87,3498.0,3186.0,231305.12
+Denim Jeans,2024-08-28,TrendFlow: newsvendor on Prophet predictive samples,0.64,3563.09,3498.0,3186.0,242256.44
+Denim Jeans,2024-08-28,Perfect foresight (upper limit),0.64,3498.0,3498.0,3186.0,244860.0
+Denim Jeans,2024-09-27,Order = moving-average (7-day) forecast,0.64,3462.86,3424.0,3058.0,238125.71
+Denim Jeans,2024-09-27,Order = LightGBM forecast,0.64,3864.99,3424.0,3058.0,222040.49
+Denim Jeans,2024-09-27,Order = same period last year,0.64,3188.67,3424.0,3058.0,223206.67
+Denim Jeans,2024-09-27,Order = Prophet mean forecast,0.64,3585.22,3424.0,3058.0,233231.04
+Denim Jeans,2024-09-27,Order = Prophet upper 97.5% bound,0.64,3799.56,3424.0,3058.0,224657.79
+Denim Jeans,2024-09-27,Original dashboard rule (summed daily bounds),0.64,3900.14,3424.0,3058.0,220634.22
+Denim Jeans,2024-09-27,TrendFlow: newsvendor on Prophet predictive samples,0.64,3626.67,3424.0,3058.0,231573.0
+Denim Jeans,2024-09-27,Perfect foresight (upper limit),0.64,3424.0,3424.0,3058.0,239680.0
+Denim Jeans,2024-10-27,Order = moving-average (7-day) forecast,0.64,3150.0,3567.0,3111.0,220500.0
+Denim Jeans,2024-10-27,Order = LightGBM forecast,0.64,3358.36,3567.0,3111.0,235085.46
+Denim Jeans,2024-10-27,Order = same period last year,0.64,2965.83,3567.0,3111.0,207608.33
+Denim Jeans,2024-10-27,Order = Prophet mean forecast,0.64,3390.86,3567.0,3111.0,237360.32
+Denim Jeans,2024-10-27,Order = Prophet upper 97.5% bound,0.64,3604.87,3567.0,3111.0,248175.24
+Denim Jeans,2024-10-27,Original dashboard rule (summed daily bounds),0.64,3705.3,3567.0,3111.0,244157.8
+Denim Jeans,2024-10-27,TrendFlow: newsvendor on Prophet predictive samples,0.64,3432.25,3567.0,3111.0,240257.38
+Denim Jeans,2024-10-27,Perfect foresight (upper limit),0.64,3567.0,3567.0,3111.0,249690.0
+Denim Jeans,2024-11-26,Order = moving-average (7-day) forecast,0.64,3547.71,3468.0,3166.0,239571.43
+Denim Jeans,2024-11-26,Order = LightGBM forecast,0.64,3560.37,3468.0,3166.0,239065.25
+Denim Jeans,2024-11-26,Order = same period last year,0.64,3075.5,3468.0,3166.0,215285.0
+Denim Jeans,2024-11-26,Order = Prophet mean forecast,0.64,3475.88,3468.0,3166.0,242444.83
+Denim Jeans,2024-11-26,Order = Prophet upper 97.5% bound,0.64,3689.83,3468.0,3166.0,233886.69
+Denim Jeans,2024-11-26,Original dashboard rule (summed daily bounds),0.64,3790.24,3468.0,3166.0,229870.27
+Denim Jeans,2024-11-26,TrendFlow: newsvendor on Prophet predictive samples,0.64,3517.26,3468.0,3166.0,240789.78
+Denim Jeans,2024-11-26,Perfect foresight (upper limit),0.64,3468.0,3468.0,3166.0,242760.0
+Floral Dress,2024-01-01,Order = moving-average (7-day) forecast,0.64,3321.43,3424.0,3331.0,232500.0
+Floral Dress,2024-01-01,Order = LightGBM forecast,0.64,3433.8,3424.0,3331.0,239287.94
+Floral Dress,2024-01-01,Order = same period last year,0.64,2893.0,3424.0,3331.0,202510.0
+Floral Dress,2024-01-01,Order = Prophet mean forecast,0.64,3404.27,3424.0,3331.0,238298.6
+Floral Dress,2024-01-01,Order = Prophet upper 97.5% bound,0.64,3665.01,3424.0,3331.0,230039.66
+Floral Dress,2024-01-01,Original dashboard rule (summed daily bounds),0.64,3787.39,3424.0,3331.0,225144.52
+Floral Dress,2024-01-01,TrendFlow: newsvendor on Prophet predictive samples,0.64,3454.69,3424.0,3331.0,238452.22
+Floral Dress,2024-01-01,Perfect foresight (upper limit),0.64,3424.0,3424.0,3331.0,239680.0
+Floral Dress,2024-01-31,Order = moving-average (7-day) forecast,0.64,3321.43,3561.0,3461.0,232500.0
+Floral Dress,2024-01-31,Order = LightGBM forecast,0.64,3270.64,3561.0,3461.0,228944.5
+Floral Dress,2024-01-31,Order = same period last year,0.64,2996.0,3561.0,3461.0,209720.0
+Floral Dress,2024-01-31,Order = Prophet mean forecast,0.64,3479.97,3561.0,3461.0,243598.08
+Floral Dress,2024-01-31,Order = Prophet upper 97.5% bound,0.64,3734.9,3561.0,3461.0,242313.96
+Floral Dress,2024-01-31,Original dashboard rule (summed daily bounds),0.64,3854.54,3561.0,3461.0,237528.34
+Floral Dress,2024-01-31,TrendFlow: newsvendor on Prophet predictive samples,0.64,3529.27,3561.0,3461.0,247049.1
+Floral Dress,2024-01-31,Perfect foresight (upper limit),0.64,3561.0,3561.0,3461.0,249270.0
+Floral Dress,2024-03-01,Order = moving-average (7-day) forecast,0.64,3351.43,3290.0,3157.0,227842.86
+Floral Dress,2024-03-01,Order = LightGBM forecast,0.64,3640.35,3290.0,3157.0,216286.09
+Floral Dress,2024-03-01,Order = same period last year,0.64,3192.5,3290.0,3157.0,223475.0
+Floral Dress,2024-03-01,Order = Prophet mean forecast,0.64,3787.96,3290.0,3157.0,210381.77
+Floral Dress,2024-03-01,Order = Prophet upper 97.5% bound,0.64,4039.72,3290.0,3157.0,200311.1
+Floral Dress,2024-03-01,Original dashboard rule (summed daily bounds),0.64,4157.88,3290.0,3157.0,195584.83
+Floral Dress,2024-03-01,TrendFlow: newsvendor on Prophet predictive samples,0.64,3836.64,3290.0,3157.0,208434.22
+Floral Dress,2024-03-01,Perfect foresight (upper limit),0.64,3290.0,3290.0,3157.0,230300.0
+Floral Dress,2024-03-31,Order = moving-average (7-day) forecast,0.64,3345.0,7791.0,7396.0,234150.0
+Floral Dress,2024-03-31,Order = LightGBM forecast,0.64,3984.81,7791.0,7396.0,278936.38
+Floral Dress,2024-03-31,Order = same period last year,0.64,7453.0,7791.0,7396.0,521710.0
+Floral Dress,2024-03-31,Order = Prophet mean forecast,0.64,7392.14,7791.0,7396.0,517450.11
+Floral Dress,2024-03-31,Order = Prophet upper 97.5% bound,0.64,7650.86,7791.0,7396.0,535560.31
+Floral Dress,2024-03-31,Original dashboard rule (summed daily bounds),0.64,7772.28,7791.0,7396.0,544059.6
+Floral Dress,2024-03-31,TrendFlow: newsvendor on Prophet predictive samples,0.64,7442.18,7791.0,7396.0,520952.42
+Floral Dress,2024-03-31,Perfect foresight (upper limit),0.64,7791.0,7791.0,7396.0,545370.0
+Floral Dress,2024-04-30,Order = moving-average (7-day) forecast,0.64,8010.0,7813.0,7606.0,539030.0
+Floral Dress,2024-04-30,Order = LightGBM forecast,0.64,7685.08,7813.0,7606.0,537955.44
+Floral Dress,2024-04-30,Order = same period last year,0.64,7528.0,7813.0,7606.0,526960.0
+Floral Dress,2024-04-30,Order = Prophet mean forecast,0.64,7807.55,7813.0,7606.0,546528.84
+Floral Dress,2024-04-30,Order = Prophet upper 97.5% bound,0.64,8072.98,7813.0,7606.0,536510.7
+Floral Dress,2024-04-30,Original dashboard rule (summed daily bounds),0.64,8197.55,7813.0,7606.0,531527.99
+Floral Dress,2024-04-30,TrendFlow: newsvendor on Prophet predictive samples,0.64,7858.89,7813.0,7606.0,545074.58
+Floral Dress,2024-04-30,Perfect foresight (upper limit),0.64,7813.0,7813.0,7606.0,546910.0
+Floral Dress,2024-05-30,Order = moving-average (7-day) forecast,0.64,7737.86,8014.0,7435.0,541650.0
+Floral Dress,2024-05-30,Order = LightGBM forecast,0.64,7409.8,8014.0,7435.0,518686.23
+Floral Dress,2024-05-30,Order = same period last year,0.64,7328.5,8014.0,7435.0,512995.0
+Floral Dress,2024-05-30,Order = Prophet mean forecast,0.64,7556.28,8014.0,7435.0,528939.75
+Floral Dress,2024-05-30,Order = Prophet upper 97.5% bound,0.64,7820.15,8014.0,7435.0,547410.21
+Floral Dress,2024-05-30,Original dashboard rule (summed daily bounds),0.64,7943.98,8014.0,7435.0,556078.58
+Floral Dress,2024-05-30,TrendFlow: newsvendor on Prophet predictive samples,0.64,7607.31,8014.0,7435.0,532511.73
+Floral Dress,2024-05-30,Perfect foresight (upper limit),0.64,8014.0,8014.0,7435.0,560980.0
+Floral Dress,2024-06-29,Order = moving-average (7-day) forecast,0.64,8016.43,7836.0,7358.0,541302.86
+Floral Dress,2024-06-29,Order = LightGBM forecast,0.64,8104.89,7836.0,7358.0,537764.47
+Floral Dress,2024-06-29,Order = same period last year,0.64,7474.5,7836.0,7358.0,523215.0
+Floral Dress,2024-06-29,Order = Prophet mean forecast,0.64,7867.63,7836.0,7358.0,547254.66
+Floral Dress,2024-06-29,Order = Prophet upper 97.5% bound,0.64,8131.32,7836.0,7358.0,536707.34
+Floral Dress,2024-06-29,Original dashboard rule (summed daily bounds),0.64,8255.07,7836.0,7358.0,531757.35
+Floral Dress,2024-06-29,TrendFlow: newsvendor on Prophet predictive samples,0.64,7918.63,7836.0,7358.0,545214.95
+Floral Dress,2024-06-29,Perfect foresight (upper limit),0.64,7836.0,7836.0,7358.0,548520.0
+Floral Dress,2024-07-29,Order = moving-average (7-day) forecast,0.64,7491.43,7934.0,7605.0,524400.0
+Floral Dress,2024-07-29,Order = LightGBM forecast,0.64,7638.24,7934.0,7605.0,534676.71
+Floral Dress,2024-07-29,Order = same period last year,0.64,7528.5,7934.0,7605.0,526995.0
+Floral Dress,2024-07-29,Order = Prophet mean forecast,0.64,7902.03,7934.0,7605.0,553142.05
+Floral Dress,2024-07-29,Order = Prophet upper 97.5% bound,0.64,8164.22,7934.0,7605.0,546171.1
+Floral Dress,2024-07-29,Original dashboard rule (summed daily bounds),0.64,8287.27,7934.0,7605.0,541249.1
+Floral Dress,2024-07-29,TrendFlow: newsvendor on Prophet predictive samples,0.64,7952.73,7934.0,7605.0,554630.62
+Floral Dress,2024-07-29,Perfect foresight (upper limit),0.64,7934.0,7934.0,7605.0,555380.0
+Floral Dress,2024-08-28,Order = moving-average (7-day) forecast,0.64,7673.57,4084.0,3646.0,142297.14
+Floral Dress,2024-08-28,Order = LightGBM forecast,0.64,4011.58,4084.0,3646.0,280810.78
+Floral Dress,2024-08-28,Order = same period last year,0.64,3575.5,4084.0,3646.0,250285.0
+Floral Dress,2024-08-28,Order = Prophet mean forecast,0.64,4142.55,4084.0,3646.0,283538.17
+Floral Dress,2024-08-28,Order = Prophet upper 97.5% bound,0.64,4403.95,4084.0,3646.0,273082.05
+Floral Dress,2024-08-28,Original dashboard rule (summed daily bounds),0.64,4526.63,4084.0,3646.0,268174.9
+Floral Dress,2024-08-28,TrendFlow: newsvendor on Prophet predictive samples,0.64,4193.1,4084.0,3646.0,281516.07
+Floral Dress,2024-08-28,Perfect foresight (upper limit),0.64,4084.0,4084.0,3646.0,285880.0
+Floral Dress,2024-09-27,Order = moving-average (7-day) forecast,0.64,3789.64,3452.0,3239.0,228134.29
+Floral Dress,2024-09-27,Order = LightGBM forecast,0.64,3426.97,3452.0,3239.0,239888.04
+Floral Dress,2024-09-27,Order = same period last year,0.64,3187.0,3452.0,3239.0,223090.0
+Floral Dress,2024-09-27,Order = Prophet mean forecast,0.64,3643.66,3452.0,3239.0,233973.73
+Floral Dress,2024-09-27,Order = Prophet upper 97.5% bound,0.64,3913.48,3452.0,3239.0,223180.94
+Floral Dress,2024-09-27,Original dashboard rule (summed daily bounds),0.64,4040.11,3452.0,3239.0,218115.77
+Floral Dress,2024-09-27,TrendFlow: newsvendor on Prophet predictive samples,0.64,3695.84,3452.0,3239.0,231886.55
+Floral Dress,2024-09-27,Perfect foresight (upper limit),0.64,3452.0,3452.0,3239.0,241640.0
+Floral Dress,2024-10-27,Order = moving-average (7-day) forecast,0.64,3621.43,3555.0,3468.0,246192.86
+Floral Dress,2024-10-27,Order = LightGBM forecast,0.64,3418.86,3555.0,3468.0,239319.85
+Floral Dress,2024-10-27,Order = same period last year,0.64,2942.0,3555.0,3468.0,205940.0
+Floral Dress,2024-10-27,Order = Prophet mean forecast,0.64,3383.62,3555.0,3468.0,236853.6
+Floral Dress,2024-10-27,Order = Prophet upper 97.5% bound,0.64,3654.35,3555.0,3468.0,244875.83
+Floral Dress,2024-10-27,Original dashboard rule (summed daily bounds),0.64,3781.42,3555.0,3468.0,239793.4
+Floral Dress,2024-10-27,TrendFlow: newsvendor on Prophet predictive samples,0.64,3435.97,3555.0,3468.0,240518.1
+Floral Dress,2024-10-27,Perfect foresight (upper limit),0.64,3555.0,3555.0,3468.0,248850.0
+Floral Dress,2024-11-26,Order = moving-average (7-day) forecast,0.64,3394.29,3360.0,3141.0,233828.57
+Floral Dress,2024-11-26,Order = LightGBM forecast,0.64,3334.16,3360.0,3141.0,233391.21
+Floral Dress,2024-11-26,Order = same period last year,0.64,3030.0,3360.0,3141.0,212100.0
+Floral Dress,2024-11-26,Order = Prophet mean forecast,0.64,3486.72,3360.0,3141.0,230131.38
+Floral Dress,2024-11-26,Order = Prophet upper 97.5% bound,0.64,3755.05,3360.0,3141.0,219398.05
+Floral Dress,2024-11-26,Original dashboard rule (summed daily bounds),0.64,3880.98,3360.0,3141.0,214360.73
+Floral Dress,2024-11-26,TrendFlow: newsvendor on Prophet predictive samples,0.64,3538.61,3360.0,3141.0,228055.78
+Floral Dress,2024-11-26,Perfect foresight (upper limit),0.64,3360.0,3360.0,3141.0,235200.0
+Leather Jacket,2024-01-01,Order = moving-average (7-day) forecast,0.64,9364.29,9487.0,8863.0,655500.0
+Leather Jacket,2024-01-01,Order = LightGBM forecast,0.64,3692.66,9487.0,8863.0,258486.17
+Leather Jacket,2024-01-01,Order = same period last year,0.64,8848.5,9487.0,8863.0,619395.0
+Leather Jacket,2024-01-01,Order = Prophet mean forecast,0.64,10003.97,9487.0,8863.0,643411.32
+Leather Jacket,2024-01-01,Order = Prophet upper 97.5% bound,0.64,10299.43,9487.0,8863.0,631592.62
+Leather Jacket,2024-01-01,Original dashboard rule (summed daily bounds),0.64,10438.1,9487.0,8863.0,626046.0
+Leather Jacket,2024-01-01,TrendFlow: newsvendor on Prophet predictive samples,0.64,10061.11,9487.0,8863.0,641125.71
+Leather Jacket,2024-01-01,Perfect foresight (upper limit),0.64,9487.0,9487.0,8863.0,664090.0
+Leather Jacket,2024-01-31,Order = moving-average (7-day) forecast,0.64,8901.43,9662.0,9145.0,623100.0
+Leather Jacket,2024-01-31,Order = LightGBM forecast,0.64,8881.27,9662.0,9145.0,621688.75
+Leather Jacket,2024-01-31,Order = same period last year,0.64,8810.0,9662.0,9145.0,616700.0
+Leather Jacket,2024-01-31,Order = Prophet mean forecast,0.64,9314.63,9662.0,9145.0,652024.03
+Leather Jacket,2024-01-31,Order = Prophet upper 97.5% bound,0.64,9601.18,9662.0,9145.0,672082.45
+Leather Jacket,2024-01-31,Original dashboard rule (summed daily bounds),0.64,9735.95,9662.0,9145.0,673382.05
+Leather Jacket,2024-01-31,TrendFlow: newsvendor on Prophet predictive samples,0.64,9370.01,9662.0,9145.0,655900.63
+Leather Jacket,2024-01-31,Perfect foresight (upper limit),0.64,9662.0,9662.0,9145.0,676340.0
+Leather Jacket,2024-03-01,Order = moving-average (7-day) forecast,0.64,9390.0,3463.0,3255.0,5330.0
+Leather Jacket,2024-03-01,Order = LightGBM forecast,0.64,7324.44,3463.0,3255.0,87952.46
+Leather Jacket,2024-03-01,Order = same period last year,0.64,2898.5,3463.0,3255.0,202895.0
+Leather Jacket,2024-03-01,Order = Prophet mean forecast,0.64,4110.34,3463.0,3255.0,216516.49
+Leather Jacket,2024-03-01,Order = Prophet upper 97.5% bound,0.64,4409.27,3463.0,3255.0,204559.31
+Leather Jacket,2024-03-01,Original dashboard rule (summed daily bounds),0.64,4549.63,3463.0,3255.0,198944.77
+Leather Jacket,2024-03-01,TrendFlow: newsvendor on Prophet predictive samples,0.64,4168.17,3463.0,3255.0,214203.1
+Leather Jacket,2024-03-01,Perfect foresight (upper limit),0.64,3463.0,3463.0,3255.0,242410.0
+Leather Jacket,2024-03-31,Order = moving-average (7-day) forecast,0.64,3267.86,3514.0,3243.0,228750.0
+Leather Jacket,2024-03-31,Order = LightGBM forecast,0.64,3245.9,3514.0,3243.0,227212.93
+Leather Jacket,2024-03-31,Order = same period last year,0.64,3203.0,3514.0,3243.0,224210.0
+Leather Jacket,2024-03-31,Order = Prophet mean forecast,0.64,3891.99,3514.0,3243.0,230860.42
+Leather Jacket,2024-03-31,Order = Prophet upper 97.5% bound,0.64,4200.59,3514.0,3243.0,218516.31
+Leather Jacket,2024-03-31,Original dashboard rule (summed daily bounds),0.64,4345.42,3514.0,3243.0,212723.08
+Leather Jacket,2024-03-31,TrendFlow: newsvendor on Prophet predictive samples,0.64,3951.67,3514.0,3243.0,228473.24
+Leather Jacket,2024-03-31,Perfect foresight (upper limit),0.64,3514.0,3514.0,3243.0,245980.0
+Leather Jacket,2024-04-30,Order = moving-average (7-day) forecast,0.64,3428.57,3497.0,3400.0,240000.0
+Leather Jacket,2024-04-30,Order = LightGBM forecast,0.64,3568.07,3497.0,3400.0,241947.19
+Leather Jacket,2024-04-30,Order = same period last year,0.64,2761.0,3497.0,3400.0,193270.0
+Leather Jacket,2024-04-30,Order = Prophet mean forecast,0.64,3400.64,3497.0,3400.0,238044.77
+Leather Jacket,2024-04-30,Order = Prophet upper 97.5% bound,0.64,3706.53,3497.0,3400.0,236408.77
+Leather Jacket,2024-04-30,Original dashboard rule (summed daily bounds),0.64,3850.09,3497.0,3400.0,230666.25
+Leather Jacket,2024-04-30,TrendFlow: newsvendor on Prophet predictive samples,0.64,3459.79,3497.0,3400.0,242185.04
+Leather Jacket,2024-04-30,Perfect foresight (upper limit),0.64,3497.0,3497.0,3400.0,244790.0
+Leather Jacket,2024-05-30,Order = moving-average (7-day) forecast,0.64,3557.14,3507.0,3300.0,243484.29
+Leather Jacket,2024-05-30,Order = LightGBM forecast,0.64,3437.77,3507.0,3300.0,240643.93
+Leather Jacket,2024-05-30,Order = same period last year,0.64,3321.0,3507.0,3300.0,232470.0
+Leather Jacket,2024-05-30,Order = Prophet mean forecast,0.64,3853.08,3507.0,3300.0,231646.79
+Leather Jacket,2024-05-30,Order = Prophet upper 97.5% bound,0.64,4152.12,3507.0,3300.0,219685.34
+Leather Jacket,2024-05-30,Original dashboard rule (summed daily bounds),0.64,4292.46,3507.0,3300.0,214071.64
+Leather Jacket,2024-05-30,TrendFlow: newsvendor on Prophet predictive samples,0.64,3910.91,3507.0,3300.0,229333.7
+Leather Jacket,2024-05-30,Perfect foresight (upper limit),0.64,3507.0,3507.0,3300.0,245490.0
+Leather Jacket,2024-06-29,Order = moving-average (7-day) forecast,0.64,3338.57,3538.0,3360.0,233700.0
+Leather Jacket,2024-06-29,Order = LightGBM forecast,0.64,3472.19,3538.0,3360.0,243053.11
+Leather Jacket,2024-06-29,Order = same period last year,0.64,2823.0,3538.0,3360.0,197610.0
+Leather Jacket,2024-06-29,Order = Prophet mean forecast,0.64,3595.42,3538.0,3360.0,245363.1
+Leather Jacket,2024-06-29,Order = Prophet upper 97.5% bound,0.64,3891.06,3538.0,3360.0,233537.7
+Leather Jacket,2024-06-29,Original dashboard rule (summed daily bounds),0.64,4029.81,3538.0,3360.0,227987.7
+Leather Jacket,2024-06-29,TrendFlow: newsvendor on Prophet predictive samples,0.64,3652.59,3538.0,3360.0,243076.59
+Leather Jacket,2024-06-29,Perfect foresight (upper limit),0.64,3538.0,3538.0,3360.0,247660.0
+Leather Jacket,2024-07-29,Order = moving-average (7-day) forecast,0.64,3565.71,3487.0,3355.0,240941.43
+Leather Jacket,2024-07-29,Order = LightGBM forecast,0.64,3636.11,3487.0,3355.0,238125.66
+Leather Jacket,2024-07-29,Order = same period last year,0.64,3163.5,3487.0,3355.0,221445.0
+Leather Jacket,2024-07-29,Order = Prophet mean forecast,0.64,3682.84,3487.0,3355.0,236256.43
+Leather Jacket,2024-07-29,Order = Prophet upper 97.5% bound,0.64,3973.06,3487.0,3355.0,224647.66
+Leather Jacket,2024-07-29,Original dashboard rule (summed daily bounds),0.64,4109.26,3487.0,3355.0,219199.52
+Leather Jacket,2024-07-29,TrendFlow: newsvendor on Prophet predictive samples,0.64,3738.96,3487.0,3355.0,234011.45
+Leather Jacket,2024-07-29,Perfect foresight (upper limit),0.64,3487.0,3487.0,3355.0,244090.0
+Leather Jacket,2024-08-28,Order = moving-average (7-day) forecast,0.64,3008.57,3524.0,3227.0,210600.0
+Leather Jacket,2024-08-28,Order = LightGBM forecast,0.64,3078.78,3524.0,3227.0,215514.94
+Leather Jacket,2024-08-28,Order = same period last year,0.64,2860.0,3524.0,3227.0,200200.0
+Leather Jacket,2024-08-28,Order = Prophet mean forecast,0.64,3369.88,3524.0,3227.0,235891.51
+Leather Jacket,2024-08-28,Order = Prophet upper 97.5% bound,0.64,3657.31,3524.0,3227.0,241347.77
+Leather Jacket,2024-08-28,Original dashboard rule (summed daily bounds),0.64,3792.22,3524.0,3227.0,235951.15
+Leather Jacket,2024-08-28,TrendFlow: newsvendor on Prophet predictive samples,0.64,3425.48,3524.0,3227.0,239783.26
+Leather Jacket,2024-08-28,Perfect foresight (upper limit),0.64,3524.0,3524.0,3227.0,246680.0
+Leather Jacket,2024-09-27,Order = moving-average (7-day) forecast,0.64,3651.43,8759.0,8245.0,255600.0
+Leather Jacket,2024-09-27,Order = LightGBM forecast,0.64,8196.72,8759.0,8245.0,573770.52
+Leather Jacket,2024-09-27,Order = same period last year,0.64,8514.5,8759.0,8245.0,596015.0
+Leather Jacket,2024-09-27,Order = Prophet mean forecast,0.64,8861.31,8759.0,8245.0,609037.57
+Leather Jacket,2024-09-27,Order = Prophet upper 97.5% bound,0.64,9150.68,8759.0,8245.0,597462.62
+Leather Jacket,2024-09-27,Original dashboard rule (summed daily bounds),0.64,9286.49,8759.0,8245.0,592030.25
+Leather Jacket,2024-09-27,TrendFlow: newsvendor on Prophet predictive samples,0.64,8917.28,8759.0,8245.0,606798.92
+Leather Jacket,2024-09-27,Perfect foresight (upper limit),0.64,8759.0,8759.0,8245.0,613130.0
+Leather Jacket,2024-10-27,Order = moving-average (7-day) forecast,0.64,9555.0,9319.0,8677.0,642890.0
+Leather Jacket,2024-10-27,Order = LightGBM forecast,0.64,9346.52,9319.0,8677.0,651229.24
+Leather Jacket,2024-10-27,Order = same period last year,0.64,8923.0,9319.0,8677.0,624610.0
+Leather Jacket,2024-10-27,Order = Prophet mean forecast,0.64,9346.61,9319.0,8677.0,651225.54
+Leather Jacket,2024-10-27,Order = Prophet upper 97.5% bound,0.64,9654.33,9319.0,8677.0,638916.89
+Leather Jacket,2024-10-27,Original dashboard rule (summed daily bounds),0.64,9798.74,9319.0,8677.0,633140.3
+Leather Jacket,2024-10-27,TrendFlow: newsvendor on Prophet predictive samples,0.64,9406.12,9319.0,8677.0,648845.15
+Leather Jacket,2024-10-27,Perfect foresight (upper limit),0.64,9319.0,9319.0,8677.0,652330.0
+Leather Jacket,2024-11-26,Order = moving-average (7-day) forecast,0.64,9098.57,9378.0,8711.0,636900.0
+Leather Jacket,2024-11-26,Order = LightGBM forecast,0.64,9261.78,9378.0,8711.0,648324.4
+Leather Jacket,2024-11-26,Order = same period last year,0.64,9057.0,9378.0,8711.0,633990.0
+Leather Jacket,2024-11-26,Order = Prophet mean forecast,0.64,9482.51,9378.0,8711.0,652279.74
+Leather Jacket,2024-11-26,Order = Prophet upper 97.5% bound,0.64,9786.78,9378.0,8711.0,640108.79
+Leather Jacket,2024-11-26,Original dashboard rule (summed daily bounds),0.64,9929.58,9378.0,8711.0,634396.62
+Leather Jacket,2024-11-26,TrendFlow: newsvendor on Prophet predictive samples,0.64,9541.36,9378.0,8711.0,649925.71
+Leather Jacket,2024-11-26,Perfect foresight (upper limit),0.64,9378.0,9378.0,8711.0,656460.0

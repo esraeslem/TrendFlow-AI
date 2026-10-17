@@ -1,400 +1,247 @@
 """
-TrendFlow Dashboard 
-----------------------------------------
+TrendFlow Dashboard
+-------------------
+Run with:  streamlit run dashboard.py
+
+Tabs
+* Executive summary - one recommendation per product, portfolio totals, editable unit economics
+* Product deep-dive  - forecast chart, newsvendor detail and strategy comparison for one product
+
+Data: the bundled synthetic dataset, or upload any CSV with columns Date, Product, Sales
+(e.g. the H&M aggregate produced by prepare_hm.py).
+
 Author: Esra Eslem Savaş
-Date: December 2025
 """
 
-import streamlit as st
+import json
+import os
+
 import pandas as pd
-from prophet import Prophet
-from prophet.plot import plot_plotly
+import streamlit as st
 from plotly import graph_objs as go
-import random
-import numpy as np
 
-# ========================================
-# PAGE CONFIGURATION
-# ========================================
-st.set_page_config(
-    page_title="TrendFlow: Supply Chain AI", 
-    page_icon="📈", 
-    layout="wide"
-)
+from src.data_processing import load_sales_data, mask_stockouts, product_series
+from src.forecasting import ProphetForecaster
+from src.optimization import NewsvendorOptimizer
 
+ECONOMICS_FILE = os.path.join("experiments", "economics.json")
+DEFAULT_ECON = {"price": 120.0, "cost": 50.0, "salvage": 10.0}
+
+st.set_page_config(page_title="TrendFlow: Supply Chain AI", page_icon="📈", layout="wide")
 st.title("📈 TrendFlow: AI-Powered Supply Chain Optimizer")
-st.markdown("### Profit-Aware Inventory Planning with Newsvendor Model")
+st.caption("Prophet demand forecasts → newsvendor order quantities that maximise expected profit")
+
 
 # ========================================
-# SIDEBAR CONFIGURATION
+# DATA + MODELS (cached)
+# ========================================
+@st.cache_data(show_spinner=False)
+def load_data(csv_bytes: bytes | None) -> pd.DataFrame:
+    if csv_bytes is None:
+        return load_sales_data()  # bundled synthetic data (generated if missing)
+    import io
+
+    df = pd.read_csv(io.BytesIO(csv_bytes), parse_dates=["Date"])
+    missing = {"Date", "Product", "Sales"} - set(df.columns)
+    if missing:
+        raise ValueError(f"CSV is missing columns: {sorted(missing)}")
+    return df
+
+
+@st.cache_resource(show_spinner=False)
+def fit_forecaster(csv_bytes: bytes | None, product: str) -> ProphetForecaster:
+    series = mask_stockouts(product_series(load_data(csv_bytes), product))  # no-op without InStock
+    return ProphetForecaster().fit(series[["Date", "Sales"]])
+
+
+@st.cache_data(show_spinner=False)
+def forecast(csv_bytes: bytes | None, product: str, periods: int):
+    f = fit_forecaster(csv_bytes, product)
+    return f.predict(periods), f.forecast_total_demand(periods)
+
+
+def default_economics(products) -> pd.DataFrame:
+    table = {}
+    if os.path.exists(ECONOMICS_FILE):
+        with open(ECONOMICS_FILE) as fh:
+            table = json.load(fh)
+    rows = [{"Product": p, **{k: float(v) for k, v in table.get(p, DEFAULT_ECON).items()}} for p in products]
+    return pd.DataFrame(rows).set_index("Product")[["price", "cost", "salvage"]]
+
+
+# ========================================
+# SIDEBAR
 # ========================================
 st.sidebar.header("⚙️ Configuration")
+upload = st.sidebar.file_uploader("Sales data (CSV: Date, Product, Sales)", type="csv",
+                                  help="Leave empty to use the bundled synthetic dataset")
+csv_bytes = upload.getvalue() if upload else None
+try:
+    df = load_data(csv_bytes)
+except ValueError as e:
+    st.error(str(e))
+    st.stop()
+products = sorted(df["Product"].unique())
+days_to_predict = st.sidebar.slider("Planning period (days)", 7, 180, 30,
+                                    help="One order is placed to cover this whole period")
+st.sidebar.caption(f"{len(products)} products · {df['Date'].min():%d %b %Y} – {df['Date'].max():%d %b %Y}")
 
-# Product selection
-selected_product = st.sidebar.selectbox(
-    "Select Product to Forecast:", 
-    ['Floral Dress', 'Leather Jacket', 'Denim Jeans', 'Chunky Sneaker']
-)
-
-# Forecast horizon
-days_to_predict = st.sidebar.slider(
-    "Forecast Horizon (Days):", 
-    30, 365, 90
-)
-
-# Economic parameters
-st.sidebar.markdown("### 💰 Unit Economics")
-unit_cost = st.sidebar.number_input(
-    "Unit Cost ($)", 
-    min_value=1.0, 
-    max_value=1000.0, 
-    value=50.0, 
-    step=5.0,
-    help="Cost per unit (overstocking penalty)"
-)
-
-unit_price = st.sidebar.number_input(
-    "Unit Price ($)", 
-    min_value=1.0, 
-    max_value=2000.0, 
-    value=120.0, 
-    step=5.0,
-    help="Selling price per unit"
-)
-
-salvage_value = st.sidebar.number_input(
-    "Salvage Value ($)", 
-    min_value=0.0, 
-    max_value=1000.0, 
-    value=10.0, 
-    step=5.0,
-    help="Recovery value for unsold inventory"
-)
+tab_exec, tab_detail = st.tabs(["📋 Executive summary", "🔍 Product deep-dive"])
 
 # ========================================
-# DATA GENERATION
+# EXECUTIVE SUMMARY
 # ========================================
-@st.cache_data
+with tab_exec:
+    st.markdown(f"#### Order plan for the next {days_to_predict} days")
+    with st.expander("💰 Unit economics per product (editable)", expanded=False):
+        st.caption("Price, unit cost and salvage value (what an unsold unit is worth at the end of the period).")
+        econ = st.data_editor(default_economics(products), width="stretch", key="econ")
 
-def load_data():
+    rows, problems = [], []
+    progress = st.progress(0.0, text="Forecasting demand...")
+    for i, p in enumerate(products):
+        e = econ.loc[p]
+        try:
+            opt = NewsvendorOptimizer(unit_cost=e.cost, unit_price=e.price, salvage_value=e.salvage)
+        except ValueError:
+            problems.append(p)
+            continue
+        _, total = forecast(csv_bytes, p, days_to_predict)
+        best = opt.optimize_samples(total["samples"])
+        naive = opt.expected_outcome_samples(total["mean"], total["samples"])
+        rows.append({
+            "Product": p,
+            "Forecast demand": total["mean"],
+            "95% range": f"{total['lower']:,.0f} – {total['upper']:,.0f}",
+            "Recommended order": best["optimal_quantity"],
+            "vs. forecast": best["optimal_quantity"] - round(total["mean"]),
+            "Expected profit": best["expected_profit"],
+            "Gain vs. ordering the forecast": best["expected_profit"] - naive["expected_profit"],
+            "In-stock probability": best["service_level"],
+            "Expected unsold units": best["expected_leftover"],
+            "Critical ratio": opt.critical_ratio,
+        })
+        progress.progress((i + 1) / len(products), text=f"Forecasting demand... {p}")
+    progress.empty()
+    if problems:
+        st.warning(f"Skipped {', '.join(problems)}: unit economics must satisfy salvage < cost < price.")
 
+    if rows:
+        plan = pd.DataFrame(rows)
+        c1, c2, c3, c4 = st.columns(4)
+        c1.metric("Units to order", f"{plan['Recommended order'].sum():,.0f}")
+        c2.metric("Expected profit", f"${plan['Expected profit'].sum():,.0f}")
+        c3.metric("Gain vs. ordering the forecast", f"${plan['Gain vs. ordering the forecast'].sum():,.0f}",
+                  help="Expected extra profit from ordering the newsvendor quantity instead of the mean forecast")
+        c4.metric("Expected unsold units", f"{plan['Expected unsold units'].sum():,.0f}")
+
+        st.dataframe(
+            plan.drop(columns=["Critical ratio"]), hide_index=True, width="stretch",
+            column_config={
+                "Forecast demand": st.column_config.NumberColumn(format="%.0f"),
+                "Recommended order": st.column_config.NumberColumn(format="%d"),
+                "vs. forecast": st.column_config.NumberColumn(format="%+d"),
+                "Expected profit": st.column_config.NumberColumn(format="$%.0f"),
+                "Gain vs. ordering the forecast": st.column_config.NumberColumn(format="$%.0f"),
+                "In-stock probability": st.column_config.NumberColumn(format="%.0f%%"),
+                "Expected unsold units": st.column_config.NumberColumn(format="%.0f"),
+            })
+
+        # Plain-language takeaways
+        st.markdown("##### Key takeaways")
+        above = plan[plan["vs. forecast"] > 0]["Product"].tolist()
+        below = plan[plan["vs. forecast"] < 0]["Product"].tolist()
+        top = plan.sort_values("Expected profit", ascending=False).iloc[0]
+        widest = plan.assign(rel=(plan["Recommended order"] - plan["Forecast demand"]).abs()
+                             / plan["Forecast demand"]).sort_values("rel", ascending=False).iloc[0]
+        notes = [f"**{top['Product']}** is the largest profit driver "
+                 f"(${top['Expected profit']:,.0f}, {top['Expected profit'] / plan['Expected profit'].sum():.0%} "
+                 "of the total)."]
+        if above:
+            notes.append(f"Order **above** the forecast for {', '.join(above)}: a lost sale costs more "
+                         "than a leftover unit.")
+        if below:
+            notes.append(f"Order **below** the forecast for {', '.join(below)}: leftovers are expensive "
+                         "relative to the margin.")
+        notes.append(f"The biggest adjustment is **{widest['Product']}** "
+                     f"({widest['vs. forecast']:+,} units vs. the forecast).")
+        st.markdown("\n".join(f"- {n}" for n in notes))
+        st.caption("Expected values are averaged over Prophet's predictive distribution. Backtests show "
+                   "Prophet's intervals are somewhat too narrow, so treat the in-stock probabilities as optimistic.")
+
+# ========================================
+# PRODUCT DEEP-DIVE
+# ========================================
+with tab_detail:
+    selected_product = st.selectbox("Product", products)
+    e = econ.loc[selected_product]
     try:
-        df = pd.read_csv('data/raw/fashion_sales_data.csv')
-        df['Date'] = pd.to_datetime(df['Date'])
-        return df
-    except FileNotFoundError:
-        st.error("❌ Data file not found. Please run 'data_generator.py' first.")
-        return pd.DataFrame()
+        optimizer = NewsvendorOptimizer(unit_cost=e.cost, unit_price=e.price, salvage_value=e.salvage)
+    except ValueError as err:
+        st.error(f"Invalid unit economics for {selected_product}: {err}")
+        st.stop()
+    unit_price, unit_cost, salvage_value = e.price, e.cost, e.salvage
+    product_df = product_series(df, selected_product)
 
-    dates = pd.date_range(start='2024-01-01', periods=365, freq='D')
-    products = ['Floral Dress', 'Leather Jacket', 'Denim Jeans', 'Chunky Sneaker']
-    data = []
-    
-    for date in dates:
-        month = date.month
-        for product in products:
-            base_demand = random.randint(50, 200)
-            
-            # Seasonal adjustments
-            if product == 'Floral Dress' and 4 <= month <= 8:
-                base_demand += random.randint(300, 500)
-            elif product == 'Leather Jacket' and (month >= 10 or month <= 2):
-                base_demand += random.randint(200, 400)
-            elif product == 'Denim Jeans':
-                base_demand += random.randint(50, 100)
-            
-            # Convert to sales with noise
-            actual_sales = int(base_demand * 0.45) + random.randint(-20, 20)
-            data.append([date, product, max(0, actual_sales)])
-            
-    return pd.DataFrame(data, columns=['Date', 'Product', 'Sales'])
+    with st.spinner(f"Training Prophet on {selected_product}..."):
+        daily_fc, total = forecast(csv_bytes, selected_product, days_to_predict)
 
-# ========================================
-# NEWSVENDOR MODEL
-# ========================================
-def calculate_newsvendor_quantity(
-    forecast_mean: float,
-    forecast_lower: float,
-    forecast_upper: float,
-    unit_cost: float,
-    unit_price: float,
-    salvage_value: float = 0.0
-) -> dict:
-    """
-    Calculate optimal order quantity using Newsvendor Model.
-    
-    The Newsvendor Model maximizes expected profit by balancing:
-    - Overstocking cost: c_o = unit_cost - salvage_value
-    - Understocking cost: c_u = unit_price - unit_cost
-    
-    Critical Ratio: CR = c_u / (c_u + c_o)
-    Optimal Quantity: Q* = F^(-1)(CR) where F is demand distribution CDF
-    
-    Args:
-        forecast_mean: Mean predicted demand
-        forecast_lower: Lower bound of 95% CI
-        forecast_upper: Upper bound of 95% CI
-        unit_cost: Cost per unit purchased
-        unit_price: Revenue per unit sold
-        salvage_value: Recovery value for unsold units (default 0)
-        
-    Returns:
-        dict: {
-            'optimal_quantity': int,
-            'critical_ratio': float,
-            'expected_profit': float,
-            'service_level': float
-        }
-        
-    References:
-        Schweitzer & Cachon (2000). "Decision Bias in the Newsvendor Problem"
-    """
-    # Calculate costs
-    overstocking_cost = unit_cost - salvage_value  # Penalty for excess
-    understocking_cost = unit_price - unit_cost     # Lost profit per stockout
-    
-    # Critical ratio (optimal service level)
-    critical_ratio = understocking_cost / (understocking_cost + overstocking_cost)
-    
-    # Map critical ratio to demand distribution
-    # Assuming normal distribution from Prophet's confidence interval
-    optimal_quantity = forecast_lower + critical_ratio * (forecast_upper - forecast_lower)
-    
-    # Expected profit calculation (simplified)
-    # Assumes demand follows forecast distribution
-    expected_sales = min(optimal_quantity, forecast_mean)
-    expected_revenue = expected_sales * unit_price
-    expected_cost = optimal_quantity * unit_cost
-    expected_salvage = max(0, optimal_quantity - forecast_mean) * salvage_value
-    expected_profit = expected_revenue - expected_cost + expected_salvage
-    
-    return {
-        'optimal_quantity': int(round(optimal_quantity)),
-        'critical_ratio': round(critical_ratio, 3),
-        'expected_profit': round(expected_profit, 2),
-        'service_level': round(critical_ratio * 100, 1)
-    }
+    st.subheader(f"🔮 Forecast: next {days_to_predict} days")
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=product_df["Date"], y=product_df["Sales"], mode="markers", name="Actual",
+                             marker=dict(size=3, color="black", opacity=0.5)))
+    fig.add_trace(go.Scatter(x=daily_fc["ds"], y=daily_fc["yhat_upper"], line=dict(width=0),
+                             showlegend=False, hoverinfo="skip"))
+    fig.add_trace(go.Scatter(x=daily_fc["ds"], y=daily_fc["yhat_lower"], line=dict(width=0), fill="tonexty",
+                             fillcolor="rgba(0,114,178,0.2)", name="95% interval (daily)"))
+    fig.add_trace(go.Scatter(x=daily_fc["ds"], y=daily_fc["yhat"], name="Forecast", line=dict(color="#0072B2")))
+    fig.update_layout(height=420, xaxis_title="Date", yaxis_title="Units / day", hovermode="x unified")
+    st.plotly_chart(fig, width="stretch")
 
-# ========================================
-# FORECASTING
-# ========================================
-def train_prophet_model(data: pd.DataFrame) -> tuple:
-    """
-    Train Facebook Prophet model on historical sales data.
-    
-    Args:
-        data: DataFrame with columns ['Date', 'Sales']
-        
-    Returns:
-        tuple: (trained_model, forecast_dataframe)
-    """
-    # Prepare data for Prophet (requires 'ds' and 'y' columns)
-    df_prophet = data.rename(columns={'Date': 'ds', 'Sales': 'y'})
-    
-    # Initialize and train model
-    model = Prophet(
-        yearly_seasonality=True,
-        weekly_seasonality=True,
-        daily_seasonality=False,
-        interval_width=0.95  # 95% confidence interval
-    )
-    model.fit(df_prophet)
-    
-    return model
+    st.subheader("🎯 Newsvendor recommendation")
+    samples = total["samples"]
+    result = optimizer.optimize_samples(samples)
+    m1, m2, m3, m4 = st.columns(4)
+    m1.metric("Forecasted demand", f"{total['mean']:,.0f} units",
+              help=f"95% interval: {total['lower']:,.0f} – {total['upper']:,.0f}")
+    m2.metric("Optimal order", f"{result['optimal_quantity']:,} units",
+              delta=f"{result['optimal_quantity'] - round(total['mean']):+,} vs forecast")
+    m3.metric("Expected profit", f"${result['expected_profit']:,.0f}")
+    m4.metric("In-stock probability", f"{result['service_level']}%",
+              help="Probability the period ends without a stockout (equals the critical ratio at the optimum)")
 
-# ========================================
-# MAIN APPLICATION
-# ========================================
-
-# Load data
-df = generate_synthetic_data()
-product_df = df[df['Product'] == selected_product].copy()
-
-# Display historical data
-col1, col2 = st.columns([3, 1])
-
-with col1:
-    st.subheader(f"📊 Historical Sales: {selected_product}")
-    st.line_chart(product_df.set_index('Date')['Sales'])
-
-with col2:
-    st.info("""
-    ℹ️ **Model Architecture:**
-    - **Stage 1**: Facebook Prophet (time-series forecasting)
-    - **Stage 2**: Newsvendor Model (profit optimization)
+    c1, c2 = st.columns(2)
+    margin = unit_price - unit_cost
+    c1.markdown(f"""
+    **Unit economics**
+    - Price ${unit_price:.2f} · cost ${unit_cost:.2f} · salvage ${salvage_value:.2f}
+    - Margin ${margin:.2f} ({margin / unit_price * 100:.1f}%)
+    """)
+    c2.markdown(f"""
+    **Optimisation**
+    - Critical ratio {optimizer.critical_ratio:.3f}
+    - Overstock cost c_o ${optimizer.overstock_cost:.2f}/unit · understock cost c_u ${optimizer.understock_cost:.2f}/unit
+    - Expected fill rate {result['fill_rate']}%
     """)
 
-st.markdown("---")
+    cr = optimizer.critical_ratio
+    if cr > 0.8:
+        st.success(f"🚀 **High-margin product** (CR={cr:.2f}): order above the forecast.")
+    elif cr < 0.5:
+        st.warning(f"⚠️ **Low-margin product** (CR={cr:.2f}): order below the forecast; "
+                   "consider pre-orders or made-to-order.")
+    else:
+        st.info(f"✅ **Balanced product** (CR={cr:.2f}): order close to the forecast and monitor early sales.")
 
-# Train model and generate forecast
-with st.spinner(f"🤖 Training AI on {selected_product} demand patterns..."):
-    model = train_prophet_model(product_df)
-    
-    # Generate forecast
-    future = model.make_future_dataframe(periods=days_to_predict)
-    forecast = model.predict(future)
-
-# Display forecast visualization
-st.subheader(f"🔮 AI Forecast: Next {days_to_predict} Days")
-fig = plot_plotly(model, forecast)
-fig.update_layout(height=500)
-st.plotly_chart(fig, use_container_width=True)
-
-# Extract future predictions
-future_data = forecast.tail(days_to_predict)
-total_forecast_mean = future_data['yhat'].sum()
-avg_daily_forecast = future_data['yhat'].mean()
-forecast_lower_sum = future_data['yhat_lower'].sum()
-forecast_upper_sum = future_data['yhat_upper'].sum()
-
-# Calculate profit margin
-profit_margin = unit_price - unit_cost
-margin_percentage = (profit_margin / unit_price) * 100
-
-# ========================================
-# NEWSVENDOR OPTIMIZATION
-# ========================================
-st.markdown("---")
-st.subheader("🎯 Profit Optimization (Newsvendor Model)")
-
-# Calculate optimal order quantity
-optimization_result = calculate_newsvendor_quantity(
-    forecast_mean=total_forecast_mean,
-    forecast_lower=forecast_lower_sum,
-    forecast_upper=forecast_upper_sum,
-    unit_cost=unit_cost,
-    unit_price=unit_price,
-    salvage_value=salvage_value
-)
-
-# Display key metrics
-metric_col1, metric_col2, metric_col3, metric_col4 = st.columns(4)
-
-metric_col1.metric(
-    label="📈 Forecasted Demand",
-    value=f"{int(total_forecast_mean):,} units",
-    help="Mean prediction from Prophet"
-)
-
-metric_col2.metric(
-    label="🎯 Optimal Order Quantity",
-    value=f"{optimization_result['optimal_quantity']:,} units",
-    delta=f"{optimization_result['optimal_quantity'] - int(total_forecast_mean):+,} vs forecast",
-    help="Quantity that maximizes expected profit (Newsvendor Model)"
-)
-
-metric_col3.metric(
-    label="💰 Expected Profit",
-    value=f"${optimization_result['expected_profit']:,.2f}",
-    help="Projected profit from optimal ordering"
-)
-
-metric_col4.metric(
-    label="📊 Service Level",
-    value=f"{optimization_result['service_level']}%",
-    help="Target fill rate (Critical Ratio)"
-)
-
-# Display economic insights
-st.markdown("### 💡 Economic Analysis")
-
-insight_col1, insight_col2 = st.columns(2)
-
-with insight_col1:
-    st.markdown(f"""
-    **Unit Economics:**
-    - **Cost per unit**: ${unit_cost:.2f}
-    - **Price per unit**: ${unit_price:.2f}
-    - **Margin per unit**: ${profit_margin:.2f} ({margin_percentage:.1f}%)
-    - **Salvage value**: ${salvage_value:.2f}
-    """)
-
-with insight_col2:
-    st.markdown(f"""
-    **Optimization Parameters:**
-    - **Critical Ratio**: {optimization_result['critical_ratio']:.3f}
-    - **Overstocking penalty**: ${unit_cost - salvage_value:.2f}/unit
-    - **Understocking penalty**: ${profit_margin:.2f}/unit
-    - **Risk tolerance**: {optimization_result['service_level']}% service level
-    """)
-
-# ========================================
-# BUSINESS RECOMMENDATIONS
-# ========================================
-st.markdown("---")
-st.subheader("📝 Strategic Recommendations")
-
-# Recommendation logic based on critical ratio
-if optimization_result['critical_ratio'] > 0.8:
-    st.success(f"""
-    🚀 **HIGH MARGIN PRODUCT** (CR={optimization_result['critical_ratio']:.2f})
-    - Order aggressively: {optimization_result['optimal_quantity']:,} units
-    - Low risk of overstocking (high profit margins justify excess inventory)
-    - Recommended: Secure supplier contracts immediately
-    """)
-elif optimization_result['critical_ratio'] < 0.5:
-    st.warning(f"""
-    ⚠️ **LOW MARGIN PRODUCT** (CR={optimization_result['critical_ratio']:.2f})
-    - Conservative ordering: {optimization_result['optimal_quantity']:,} units
-    - High risk of markdown losses (low margins cannot absorb excess)
-    - Recommended: Consider pre-orders or made-to-order
-    """)
-else:
-    st.info(f"""
-    ✅ **BALANCED PRODUCT** (CR={optimization_result['critical_ratio']:.2f})
-    - Standard ordering: {optimization_result['optimal_quantity']:,} units
-    - Moderate risk profile
-    - Recommended: Monitor early sales signals
-    """)
-
-# Demand level alert
-if total_forecast_mean > 5000:
-    st.error(f"🔥 **HIGH DEMAND ALERT**: Projected sales exceed {int(total_forecast_mean):,} units. Validate supplier capacity.")
-elif total_forecast_mean < 1000:
-    st.warning("📉 **LOW DEMAND**: Consider promotional discounts or bundling.")
-
-# ========================================
-# COMPARISON TABLE
-# ========================================
-st.markdown("---")
-st.subheader("📊 Ordering Strategy Comparison")
-
-comparison_data = {
-    'Strategy': [
-        'Order = Forecast Mean',
-        'Order = Upper Bound (Conservative)',
-        'TrendFlow (Newsvendor Optimal)'
-    ],
-    'Order Quantity': [
-        int(total_forecast_mean),
-        int(forecast_upper_sum),
-        optimization_result['optimal_quantity']
-    ],
-    'Service Level': [
-        '50%',
-        '97.5%',
-        f"{optimization_result['service_level']}%"
-    ],
-    'Expected Profit': [
-        f"${int(total_forecast_mean) * profit_margin:,.2f}",
-        f"${int(forecast_upper_sum) * profit_margin - (forecast_upper_sum - total_forecast_mean) * (unit_cost - salvage_value):,.2f}",
-        f"${optimization_result['expected_profit']:,.2f}"
-    ]
-}
-
-comparison_df = pd.DataFrame(comparison_data)
-st.dataframe(comparison_df, use_container_width=True)
-
-# ========================================
-# FOOTER
-# ========================================
-st.markdown("---")
-st.caption("""
-📖 **Methodology**: This system integrates Facebook Prophet (time-series forecasting) with the Newsvendor Model 
-(Operations Research) to recommend profit-maximizing order quantities. Unlike traditional approaches that optimize 
-for forecast accuracy, TrendFlow optimizes for business outcomes.
-
-🔬 **References**: 
-- Schweitzer & Cachon (2000). "Decision Bias in the Newsvendor Problem with Known Demand Distribution"
-- Taylor & Letham (2018). "Forecasting at Scale" (Facebook Prophet)
-""")
+    st.subheader("📊 Ordering strategy comparison")
+    strategies = {"Order = forecast mean": total["mean"], "Order = upper 97.5% bound": total["upper"],
+                  "TrendFlow (newsvendor optimum)": result["order_quantity_exact"]}
+    comp = []
+    for name, q in strategies.items():
+        out = optimizer.expected_outcome_samples(q, samples)
+        comp.append({"Strategy": name, "Order quantity": f"{round(q):,}",
+                     "In-stock probability": f"{out['service_level']}%",
+                     "Expected profit": f"${out['expected_profit']:,.0f}"})
+    st.dataframe(pd.DataFrame(comp), width="stretch", hide_index=True)
+    st.caption("All strategies are evaluated on the same predictive samples. Backtested results on held-out "
+               "data: experiments/results/summary.md.")

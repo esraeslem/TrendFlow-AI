@@ -1,265 +1,288 @@
 # 📈 TrendFlow: Profit-Aware Demand Forecasting for Fashion Retail
 
-[![Python](https://img.shields.io/badge/Python-3.9%2B-blue)](https://www.python.org/)
+[![CI](https://github.com/esraeslem/TrendFlow-AI/actions/workflows/main.yml/badge.svg)](https://github.com/esraeslem/TrendFlow-AI/actions/workflows/main.yml)
+[![Python](https://img.shields.io/badge/Python-3.10%2B-blue)](https://www.python.org/)
 [![Streamlit](https://img.shields.io/badge/Frontend-Streamlit-red)](https://streamlit.io/)
-[![Prophet](https://img.shields.io/badge/Model-Facebook_Prophet-orange)](https://facebook.github.io/prophet/)
+[![Prophet](https://img.shields.io/badge/Model-Prophet-orange)](https://facebook.github.io/prophet/)
 [![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 [![Status](https://img.shields.io/badge/Status-Research_Prototype-yellow)](https://github.com/esraeslem/TrendFlow-AI)
 
-> An AI-powered supply chain optimizer that integrates time-series forecasting with operations research to maximize retail profitability.
+> Combines time-series forecasting (Prophet) with the newsvendor model from operations research to decide how much stock to order, not just how much will sell.
 
 ---
 
 ## 🎯 Abstract
 
-Fashion retailers lose billions annually to inventory mismanagement—overstocking leads to markdowns, while understocking results in lost sales. **TrendFlow** addresses this challenge by integrating **Facebook Prophet** (time-series forecasting) with the **Newsvendor Model** (operations research) to recommend profit-maximizing order quantities.
+Overstocking leads to markdowns; understocking leads to lost sales. **TrendFlow** forecasts daily demand with **Prophet**, turns the forecast into a full predictive distribution of demand for the planning period, and orders at the **newsvendor** optimum `Q* = F⁻¹(c_u / (c_u + c_o))`, the quantity that maximises expected profit given the cost of a lost sale versus the cost of a leftover unit.
 
-**Key Innovation:** Unlike traditional approaches that optimize for forecast accuracy (RMSE/MAE), TrendFlow optimizes for business outcomes by balancing overstocking costs against understocking costs through the critical ratio: `Q* = F⁻¹(p/(p+c))`
-
-### Highlights
-- 📊 **18.8% profit improvement** over baseline ordering strategies
-- 🎯 **41.7% reduction** in stockout rate
-- 📈 **44% increase** in service level
-- ⚡ **Real-time optimization** through interactive dashboard
+### Highlights (from `python run_benchmark.py`, synthetic data)
+- 📊 **+7.8% profit** versus ordering a 7-day moving-average forecast, reaching **97.9%** of the profit possible with perfect foresight
+- 🎯 **Stockout rate 31%** versus 46% when ordering the Prophet mean forecast, with slightly higher profit
+- ⚖️ The newsvendor step matters most when the economics are asymmetric: **+3.9%** over ordering the mean for a low-margin product (critical ratio 0.17)
+- 🧪 **Censored demand handled**: with 20% stockout days, treating stockout-day sales as missing lifts profit **+2.6%** and cuts stockout periods from 79% to 31%
+- 📏 **Calibration audit**: Prophet's 95% intervals cover only 87.5% of 30-day totals, so its uncertainty is too narrow (documented, not hidden)
+- 🖥️ Streamlit dashboard with a portfolio-level **executive summary**, CSV upload (e.g. H&M data) and a FastAPI service
 
 ---
 
 ## 🧠 The Problem
 
-Fashion retailers face a classic dilemma:
-
 | Issue | Impact | Traditional Solution | Limitation |
 |-------|--------|---------------------|------------|
 | **Overstocking** | Markdowns, waste, capital tied up | Order less | Misses sales opportunities |
 | **Understocking** | Lost sales, customer dissatisfaction | Order more | Excess inventory risk |
-| **Seasonality** | Demand spikes (e.g., summer dresses) | Excel forecasts | Cannot capture complex patterns |
+| **Seasonality** | Demand spikes (e.g., summer dresses) | Spreadsheet forecasts | Hard to capture complex patterns |
 | **Uncertainty** | Unpredictable demand | Safety stock | Arbitrary buffers (e.g., +10%) |
 
-**Traditional approaches** optimize for forecast accuracy, but **accurate forecasts don't guarantee profitable decisions**. A forecast with 20% error might be more profitable than a 10% error forecast if economic trade-offs are considered.
+An accurate forecast is not automatically a profitable order: when a lost sale costs more than a leftover unit, the best order sits above the forecast, and vice versa.
 
 ---
-
 
 ## 📸 Dashboard Preview
 
 ![TrendFlow Dashboard Interface](dashboard_screenshot.png)
 
-*Figure 1: Interactive dashboard showing real-time profit optimization and order recommendations.*
+*Figure 1: Interactive dashboard: forecast, newsvendor recommendation and strategy comparison.*
 
 ---
 
-
 ## ⚙️ Methodology
 
-### Two-Stage Architecture
 ```mermaid
 graph TD;
-    A[Historical Sales Data] -->|Time-series| B(Facebook Prophet);
-    B -->|Demand Forecast + 95% CI| C{Newsvendor Model};
-    C -->|Economic Parameters| D[Critical Ratio Calculation];
-    D -->|Q* = F⁻¹p/p+c| E[Optimal Order Quantity];
-    E --> F[Interactive Dashboard];
+    A[Historical Sales Data] -->|Daily series| B(Prophet);
+    B -->|Posterior predictive samples| C[Total demand distribution for the period];
+    C --> D{Newsvendor Model};
+    D -->|Critical ratio CR = c_u / c_u + c_o| E[Q* = CR-quantile of demand];
+    E --> F[Dashboard / API];
     style B fill:#f9f,stroke:#333,stroke-width:2px;
-    style C fill:#bbf,stroke:#333,stroke-width:2px;
+    style D fill:#bbf,stroke:#333,stroke-width:2px;
     style E fill:#9f9,stroke:#333,stroke-width:2px;
 ```
 
-### Stage 1: Demand Forecasting
+### Stage 1: Demand forecasting (Prophet)
 
-**Model:** Facebook Prophet  
-**Why:** Handles seasonality (fashion is highly seasonal), holidays (Black Friday spikes), and provides confidence intervals needed for risk-aware optimization.
-
-**Formulation:**
 ```
-y(t) = g(t) + s(t) + h(t) + ε(t)
+y(t) = g(t) + s(t) + ε(t)
 ```
-Where:
-- `g(t)` = trend component
-- `s(t)` = seasonal component (yearly, weekly)
-- `h(t)` = holiday effects
-- `ε(t)` = error term
+- `g(t)`: piecewise-linear trend
+- `s(t)`: yearly and weekly seasonality (Fourier terms)
+- `ε(t)`: noise
 
-**Output:** Mean forecast `μ` and 95% confidence interval `[L, U]`
+Holiday effects `h(t)` are supported by Prophet but not used here, since the synthetic data contains no holidays.
 
-### Stage 2: Profit Optimization
+**Output:** posterior predictive samples of daily demand. TrendFlow sums them *within each sample* over the planning period to get the distribution of **total** demand. (Summing the daily 95% bounds instead treats every day's error as perfectly correlated; on this data that makes the 30-day interval about 5× too wide.)
 
-**Model:** Newsvendor Model (Operations Research)  
-**Why:** Provides closed-form solution for single-period inventory problem under demand uncertainty.
+### Stage 2: Profit optimisation (Newsvendor)
 
-**Decision Variable:** `Q` = order quantity
+| Symbol | Meaning |
+|--------|---------|
+| `c_u = price − cost` | profit lost per unit of unmet demand |
+| `c_o = cost − salvage` | loss per unsold unit |
+| `CR = c_u / (c_u + c_o)` | critical ratio = optimal in-stock probability |
+| `Q* = F⁻¹(CR)` | optimal order, `F` = distribution of total demand |
 
-**Objective:** Maximize expected profit
-
-**Formulation:**
-```
-Q* = F⁻¹(c_u / (c_u + c_o))
-```
-
-Where:
-- `c_u` = understocking cost = `price - cost` (lost profit per stockout)
-- `c_o` = overstocking cost = `cost - salvage` (loss per excess unit)
-- `F⁻¹` = inverse CDF of demand distribution (derived from Prophet's confidence interval)
-
-**Critical Ratio (CR):** The optimal service level that balances risk
-```
-CR = c_u / (c_u + c_o)
-```
-
-**Integration Logic:**
 ```python
-# Traditional approach: Order = Forecast (ignores economics)
-order_qty = forecast_mean  # Assumes 50% service level
+# Order = forecast: implicitly targets a 50% in-stock probability
+order_qty = demand_samples.mean()
 
-# TrendFlow approach: Order = Economically Optimal
-critical_ratio = profit_margin / (profit_margin + cost)
-order_qty = forecast_lower + critical_ratio * (forecast_upper - forecast_lower)
+# TrendFlow: the critical-ratio quantile of predicted demand
+critical_ratio = (price - cost) / (price - salvage)
+order_qty = np.quantile(demand_samples, critical_ratio)
 ```
+
+Expected profit is computed over the whole demand distribution (Monte Carlo over the samples, or the closed-form normal loss function `E[(D−Q)+] = σ·L(z)` for a normal approximation). Full derivation: [docs/methodology.md](docs/methodology.md).
 
 ---
 
 ## 📊 Results
 
-### Forecasting Performance
+All numbers below are produced by `python run_benchmark.py` (≈15 s) and saved to [`experiments/results/`](experiments/results/summary.md).
 
-Evaluated on synthetic fashion retail dataset (50 products, 730 days, 36,500 observations).
+**Protocol.** Synthetic dataset: 4 products × 730 days ([data description](data/README.md)). Rolling-origin backtest: for each product, models are trained only on data before the forecast origin (first origin after 365 days, then every 30 days), giving 12 thirty-day planning periods per product and **48 ordering decisions**. Profit is always measured on **realised** demand. Unit economics: price $120, cost $50, salvage $10 (critical ratio 0.636).
+
+### Forecast accuracy (daily, out of sample, 1,440 days)
 
 | Model | MAE ↓ | RMSE ↓ | MAPE ↓ | R² ↑ |
 |-------|-------|--------|--------|------|
-| Naive (Last Value) | 15.2 | 22.1 | 18.5% | 0.65 |
-| Moving Average (7-day) | 12.8 | 18.5 | 15.3% | 0.72 |
-| ARIMA(2,1,2) | 10.5 | 15.3 | 12.1% | 0.79 |
-| LSTM (2-layer) | 9.2 | 13.8 | 10.8% | 0.83 |
-| Prophet (TrendFlow) | **8.1** | **11.9** | **9.2%** | **0.87** |
+| Naive (last value) | 32.9 | 56.4 | 22.7% | 0.37 |
+| Seasonal naive (7-day) | 33.3 | 56.6 | 22.7% | 0.37 |
+| Moving average (7-day) | 28.9 | 53.6 | 19.6% | 0.43 |
+| ARIMA(2,1,2) | 29.3 | 53.6 | 19.8% | 0.43 |
+| LightGBM (calendar + lag features) | 25.6 | 42.4 | 16.7% | 0.65 |
+| Seasonal naive (same day last year) | 25.5 | 32.7 | 17.4% | 0.79 |
+| **Prophet** | **18.6** | **24.7** | **13.5%** | **0.88** |
 
-### Business Impact
+### Business impact (48 decisions, 30-day periods)
 
-Comparison of ordering strategies over 90-day planning horizon:
+| Strategy | Avg profit / period | vs. ordering the mean forecast | Stockout rate | Fill rate | Unsold stock |
+|----------|--------------------:|------:|------:|------:|------:|
+| Order = 7-day moving-average forecast | $311,816 | −7.21% | 58% | 93.8% | 5.4% |
+| Order = LightGBM forecast | $317,967 | −5.38% | 56% | 94.0% | 2.6% |
+| Order = same period last year | $312,900 | −6.89% | 100% | 91.1% | 0.0% |
+| Original dashboard rule (summed daily bounds) | $327,960 | −2.41% | 2% | 100.0% | 7.3% |
+| Order = Prophet upper 97.5% bound | $331,968 | −1.21% | 8% | 99.9% | 5.3% |
+| Order = Prophet mean forecast | $336,050 | baseline | 46% | 98.8% | 1.6% |
+| **TrendFlow (newsvendor on Prophet samples)** | **$336,147** | **+0.03%** | **31%** | 99.1% | 2.2% |
+| *Perfect foresight (upper limit)* | *$343,481* | *+2.21%* | *0%* | *100%* | *0%* |
 
-| Strategy | Avg Profit | Stockout Rate | Overstock Rate | Service Level | Improvement |
-|----------|-----------|---------------|----------------|---------------|-------------|
-| Order = Mean Forecast | $5,200 | 48% | 52% | 50% | Baseline |
-| Order = Upper CI (97.5%) | $5,800 | 12% | 88% | 88% | +11.5% |
-| Fixed Critical Ratio (0.7) | $6,400 | 25% | 75% | 75% | +23.1% |
-| Prophet Only (Accuracy) | $6,900 | 32% | 68% | 68% | +32.7% |
-| **TrendFlow (Newsvendor)** | **$8,200** | **28%** | **72%** | **72%** | **+57.7%** |
+### Sensitivity to unit economics
 
-**Key Findings:**
-- 📈 **18.8% profit improvement** over Prophet-only approach
-- 🎯 **41.7% reduction** in stockout rate vs. mean ordering
-- 📊 **44% increase** in service level vs. baseline
-- 💡 **Critical insight:** Lower forecasting error (8.1% MAPE) + economic optimization = maximum profitability
+Same backtest, different prices (`python run_benchmark.py --price P --cost C --salvage S`):
+
+| Economics | Critical ratio | TrendFlow vs. ordering the mean |
+|-----------|---------------:|-----:|
+| Low margin: price 60, cost 50, salvage 0 | 0.17 | **+3.89%** |
+| Default: price 120, cost 50, salvage 10 | 0.64 | +0.03% |
+| High margin: price 200, cost 50, salvage 40 | 0.94 | +0.77% |
+
+Per-product unit economics (`--economics experiments/economics.json`: seasonal dress and jacket with high margins, basic jeans with high salvage, a trend sneaker with critical ratio 0.31) give the same picture: TrendFlow beats the moving average by 1–13% per product but is within ±0.4% of ordering the Prophet mean. [Full results](experiments/results/per_product_economics/summary.md).
+
+### Calibration of Prophet's uncertainty
+
+The newsvendor quantile is only as good as the predicted distribution, so the benchmark checks how often actual demand falls inside Prophet's 95% intervals:
+
+| Check | Result | Ideal |
+|---|---:|---:|
+| Daily actuals inside the 95% band | 92.6% | 95% |
+| 30-day totals inside the 95% interval | 87.5% | 95% |
+| Periods with demand in the lowest 10% of the forecast distribution | 20.8% | 10% |
+| Periods with demand in the highest 10% of the forecast distribution | 12.5% | 10% |
+
+Daily bands are close to nominal, but the 30-day totals are **too confident**: Prophet assumes daily errors are independent, so they average out more than real errors do. Demand also lands in the low tail twice as often as it should (a slight upward bias after seasonal switches). Widening the total-demand distribution using backtested errors (conformal calibration) is the natural next step.
+
+### Censored demand (stockouts)
+
+Real sales data understates demand on days the shelf ran empty. `--stockout-prob 0.2` regenerates the data with 20% stockout days (50–95% of demand served) and records true demand for scoring:
+
+| Training data | TrendFlow avg profit / period | Stockout rate | Fill rate | Prophet MAE vs. true demand |
+|---|---:|---:|---:|---:|
+| Raw sales (stockouts ignored) | $324,855 | 79% | 94.9% | 21.2 |
+| **Stockout days masked as missing** (`--censoring mask`) | **$333,238 (+2.6%)** | **31%** | **98.5%** | **19.5** |
+
+Training on censored sales teaches the model that demand is lower than it is, so it under-orders almost every period. Masking those days removes the bias. [Results: ignore](experiments/results/censored_ignore/summary.md) · [mask](experiments/results/censored_mask/summary.md).
+
+**Key findings**
+- Most of the profit gain comes from **better forecasting**: Prophet is the only model that captures the yearly seasonality and trend, and ordering on it earns 7.8% more than ordering on a moving average. LightGBM with lag features comes second; tree models cannot extrapolate the step trend.
+- The newsvendor step adds little when the critical ratio is near 0.5 and uncertainty is small relative to demand (here the 95% interval of a 30-day total is only about ±7% of the mean). Its value grows with **asymmetric economics** (+3.9% for a low-margin product) and would grow further on noisier, real demand.
+- The **original dashboard rule** (interpolating across summed daily bounds) over-ordered and lost 2.4% to 9% versus ordering the mean, depending on economics; it has been replaced.
+- **Data quality beats optimisation**: ignoring stockouts costs more (−2.6%) than the newsvendor step gains in the default setting.
+- **Limitations:** the main dataset is synthetic and clean (no weekly pattern, holidays or promotions), and 48 decisions is a modest sample. Prophet's intervals are too narrow, so in-stock probabilities are optimistic (e.g. 12% realised stockouts against a 6% target in the high-margin scenario).
 
 ---
-📈 Real-World Validation
-Tested on the Kaggle Store Sales Time-Series Dataset (Corporación Favorita):
 
-Category: Beverages (High-volume)
+## 🛍️ H&M Fashion Data
 
-Baseline: Mean-based Inventory Strategy
+`prepare_hm.py` turns the Kaggle [H&M Personalized Fashion Recommendations](https://www.kaggle.com/competitions/h-and-m-personalized-fashion-recommendations/data) transactions (31M rows, Sep 2018 – Sep 2020) into daily units per product type, ready for the same backtest or the dashboard's CSV upload:
 
-TrendFlow AI Performance: +14.53% Profit Increase
+```bash
+# put transactions_train.csv and articles.csv in data/hm/ (download from Kaggle)
+python prepare_hm.py --hm-dir data/hm --top 12                  # daily units per product type
+python run_benchmark.py --data data/processed/hm_daily.csv --no-arima --out experiments/results/hm
+```
 
-Key Driver: Dynamic adjustment to weekly seasonality and optimized safety stock levels.
+H&M prices are normalised and there is no inventory data, so unit economics must be assumed (`--economics`) and stockouts cannot be flagged. The pipeline is tested on files with H&M's exact schema; results on the real data will be added here once run.
+
+## 📈 Real-World Validation (Favorita)
+
+`validate_real_world.py` runs the same pipeline on the Kaggle [Store Sales: Time Series Forecasting](https://www.kaggle.com/competitions/store-sales-time-series-forecasting/data) dataset (Corporación Favorita; default: store 44, BEVERAGES, last 60 days held out). It compares ordering the training mean, the Prophet mean forecast, and the per-day newsvendor quantile.
+
+```bash
+# download train.csv from Kaggle first (not redistributed here)
+python validate_real_world.py --data path/to/train.csv
+```
+
+> **Status:** an earlier version of this README reported "+14.53% profit". That figure came from a fallback heuristic (training mean × fixed weekend multiplier), not from Prophet, so it has been removed. Results from the current script will be added once re-run on the Kaggle data.
+
+---
 
 ## 🚀 Quick Start
 
-### Prerequisites
-- Python 3.9+
-- pip or conda package manager
-
-### Installation
 ```bash
-# Clone repository
 git clone https://github.com/esraeslem/TrendFlow-AI.git
 cd TrendFlow-AI
-
-# Create virtual environment (recommended)
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
+python -m venv venv && source venv/bin/activate   # Windows: venv\Scripts\activate
+pip install -r requirements.txt                    # add requirements-dev.txt for tests / notebook
 ```
 
-### Run Dashboard
-```bash
-# Launch Streamlit app
-streamlit run dashboard.py
+| Task | Command |
+|------|---------|
+| Dashboard (English) | `streamlit run dashboard.py` → http://localhost:8501 |
+| Dashboard (Turkish, with baseline model switch) | `streamlit run streamlit_app.py` |
+| REST API | `uvicorn api:app --reload --port 8000` → http://localhost:8000/docs |
+| Reproduce the results | `python run_benchmark.py` |
+| Per-product economics / censored demand | `python run_benchmark.py --economics experiments/economics.json` · `--stockout-prob 0.2 --censoring mask` |
+| Prepare H&M data | `python prepare_hm.py --hm-dir data/hm` |
+| Regenerate the dataset | `python data_generator.py` |
+| Tests | `pip install -r requirements-dev.txt && pytest` |
+| Docker | `docker build -t trendflow-ai . && docker run -p 8501:8501 trendflow-ai` |
 
-# Open browser to http://localhost:8501
-```
+### Deploy the dashboard (free)
 
-### Basic Usage
+1. Push the repo to GitHub.
+2. Go to [share.streamlit.io](https://share.streamlit.io), choose **Create app → Deploy a public app from GitHub**.
+3. Select `esraeslem/TrendFlow-AI`, branch `main`, main file `dashboard.py`, Python 3.11, and deploy. `requirements.txt` is installed automatically.
+4. Add the app URL to the top of this README.
+
+### Basic usage
+
 ```python
+import pandas as pd
 from src.forecasting import ProphetForecaster
 from src.optimization import NewsvendorOptimizer
-import pandas as pd
 
-# Load historical sales data
-df = pd.read_csv('data/fashion_sales_data.csv')
+df = pd.read_csv("data/raw/fashion_sales_data.csv")
+dress = df[df["Product"] == "Floral Dress"][["Date", "Sales"]]
 
-# Train forecaster
-forecaster = ProphetForecaster()
-forecaster.fit(df[['Date', 'Sales']])
-forecast = forecaster.predict(periods=30)
+# Forecast the distribution of total demand over the next 30 days
+forecaster = ProphetForecaster().fit(dress)
+demand = forecaster.forecast_total_demand(periods=30)   # mean, std, lower, upper, samples
 
-# Optimize order quantity
-optimizer = NewsvendorOptimizer(
-    unit_cost=50.0,
-    unit_price=120.0,
-    salvage_value=10.0
-)
+optimizer = NewsvendorOptimizer(unit_cost=50.0, unit_price=120.0, salvage_value=10.0)
+result = optimizer.optimize_samples(demand["samples"])
 
-result = optimizer.calculate_optimal_quantity(
-    forecast_mean=forecast['yhat'].sum(),
-    forecast_lower=forecast['yhat_lower'].sum(),
-    forecast_upper=forecast['yhat_upper'].sum()
-)
-
-print(f"Optimal order quantity: {result['optimal_quantity']} units")
-print(f"Expected profit: ${result['expected_profit']:.2f}")
-print(f"Service level: {result['service_level']}%")
+print(f"Forecast demand: {demand['mean']:,.0f} units "
+      f"(95% interval {demand['lower']:,.0f}–{demand['upper']:,.0f})")
+print(f"Optimal order quantity: {result['optimal_quantity']:,} units")
+print(f"Expected profit: ${result['expected_profit']:,.2f}")
+print(f"In-stock probability: {result['service_level']}%")
 ```
+
+If you only have a mean and a 95% interval for the period total, `optimizer.calculate_optimal_quantity(mean, lower, upper)` uses a normal approximation.
 
 ---
 
 ## 📁 Project Structure
 ```
 TrendFlow-AI/
-├── src/                        # Core modules
-│   ├── __init__.py
-│   ├── forecasting.py          # Prophet wrapper
-│   ├── optimization.py         # Newsvendor implementation
-│   ├── data_processing.py      # Data generation & preprocessing
-│   ├── metrics.py              # Evaluation metrics
-│   └── visualization.py        # Plotting utilities
-├── data/                       # Datasets
-│   ├── raw/
-│   │   └── fashion_sales_data.csv
-│   ├── processed/
-│   └── README.md               # Data documentation
-├── app/
-│   └── dashboard.py            # Streamlit interface
-├── notebooks/                  # Jupyter experiments
-│   ├── 01_exploratory_analysis.ipynb
-│   ├── 02_model_training.ipynb
-│   └── 03_results_analysis.ipynb
-├── experiments/                # Baseline comparisons
-│   ├── baseline_models.py
-│   └── results/
-├── tests/                      # Unit tests
-│   ├── test_forecasting.py
-│   ├── test_optimization.py
-│   └── test_integration.py
-├── docs/                       # Documentation
-│   ├── methodology.md
-│   ├── api_reference.md
-│   └── user_guide.md
-├── requirements.txt
-├── setup.py
-├── LICENSE
-├── .gitignore
-└── README.md
+├── src/                          # Core package
+│   ├── forecasting.py            # ProphetForecaster (daily forecast + predictive samples)
+│   ├── optimization.py           # NewsvendorOptimizer, realized_profit
+│   ├── baselines.py              # Naive, moving average, seasonal naive, ARIMA, LightGBM
+│   ├── metrics.py                # MAE/RMSE/MAPE/R², stockout & fill rates
+│   └── data_processing.py        # Synthetic data (optional stockouts), loaders, censoring helpers
+├── data/
+│   ├── raw/fashion_sales_data.csv
+│   └── README.md                 # How the synthetic data is generated
+├── experiments/
+│   ├── baseline_models.py        # Re-exports src.baselines
+│   ├── economics.json            # Illustrative per-product price / cost / salvage
+│   └── results/                  # Output of run_benchmark.py (main run + scenario subfolders)
+├── tests/                        # pytest suite (optimisation, forecasting, data, API)
+├── notebooks/demo_data_generation.ipynb
+├── research_modules/causal_supply_chain.R   # Causal DAG of the supply-chain problem
+├── docs/                         # methodology.md, user_guide.md, data_description.md
+├── dashboard.py                  # Streamlit dashboard: executive summary + product deep-dive, CSV upload
+├── streamlit_app.py              # Streamlit dashboard (Turkish, model switch)
+├── api.py                        # FastAPI service
+├── run_benchmark.py              # Rolling-origin backtest → experiments/results/
+├── prepare_hm.py                 # H&M Kaggle data → daily units per product type
+├── validate_real_world.py        # Kaggle Favorita validation
+├── model_comparison.py           # Single-series Prophet vs ARIMA vs MA helper
+├── data_generator.py             # CLI wrapper for the data generator
+├── Dockerfile
+├── requirements.txt / requirements-dev.txt
+└── .github/workflows/main.yml    # CI: lint, tests (Python 3.10 & 3.12), Docker build
 ```
 
 ---
@@ -272,14 +295,13 @@ Operations Research + Machine Learning + Fashion Retail
 ### Related Work
 
 **Inventory Optimization:**
-- Arrow et al. (1951). "Optimal Inventory Policy" - *Original Newsvendor Model*
+- Arrow, Harris & Marschak (1951). "Optimal Inventory Policy" - *Original Newsvendor Model*
 - Schweitzer & Cachon (2000). "Decision Bias in the Newsvendor Problem" - *Behavioral insights*
 - Fisher & Raman (1996). "Reducing the Cost of Demand Uncertainty Through Accurate Response" - *Fashion retail application*
 
 **Demand Forecasting:**
-- Taylor & Letham (2018). "Forecasting at Scale" - *Facebook Prophet methodology*
+- Taylor & Letham (2018). "Forecasting at Scale" - *Prophet methodology*
 - Box & Jenkins (1970). "Time Series Analysis: Forecasting and Control" - *ARIMA foundation*
-- Hochreiter & Schmidhuber (1997). "Long Short-Term Memory" - *LSTM networks*
 
 **Integrated Approaches:**
 - Bertsimas & Kallus (2020). "From Predictive to Prescriptive Analytics" - *ML for decision-making*
@@ -288,7 +310,6 @@ Operations Research + Machine Learning + Fashion Retail
 ### Applications
 - Fashion retail inventory management
 - Perishable goods ordering (food, pharmaceuticals)
-- Spare parts optimization (automotive, aerospace)
 - Any single-period planning problem with demand uncertainty
 
 ---
@@ -297,13 +318,11 @@ Operations Research + Machine Learning + Fashion Retail
 
 | Category | Technology | Purpose |
 |----------|-----------|---------|
-| **Forecasting** | Facebook Prophet | Time-series modeling with seasonality |
-| **Optimization** | Newsvendor Model | Closed-form profit maximization |
-| **Dashboard** | Streamlit | Interactive web interface |
-| **Data Processing** | Pandas, NumPy | Data manipulation |
-| **Visualization** | Plotly, Matplotlib, Seaborn | Charts and graphs |
-| **Testing** | pytest | Unit and integration tests |
-| **Documentation** | Sphinx | API documentation |
+| **Forecasting** | Prophet, statsmodels, LightGBM | Time-series models and baselines |
+| **Optimization** | NumPy, SciPy | Newsvendor quantiles and expected profit |
+| **Dashboard** | Streamlit, Plotly | Interactive interface |
+| **API** | FastAPI, Pydantic, Uvicorn | REST endpoints |
+| **Testing / CI** | pytest, flake8, GitHub Actions, Docker | Automated checks |
 
 ---
 
@@ -311,42 +330,28 @@ Operations Research + Machine Learning + Fashion Retail
 
 - [Methodology Details](docs/methodology.md)
 - [User Guide](docs/user_guide.md)
-- [Data Description](docs/data_description.md)
+- [Data Description](data/README.md)
+- [Latest Benchmark Results](experiments/results/summary.md)
 
 ## 🤝 Contributing
 
-Contributions are welcome! Areas for improvement:
-
 ### High Priority
-- [ ] Multi-location inventory optimization (network effects)
-- [ ] Deep learning baselines (Transformer, N-BEATS)
-- [ ] Real-world dataset integration
-- [ ] Multi-period planning horizon
+- [ ] Run the H&M and Favorita pipelines on the real data and report results
+- [ ] Conformal calibration of the total-demand distribution (fixes the too-narrow intervals)
+- [ ] Multi-period planning horizon and supplier lead times
+- [ ] Deep learning baselines (N-BEATS, TFT)
 
 ### Medium Priority
-- [ ] Supplier lead time integration
-- [ ] Promotional demand modeling
+- [ ] Promotional and holiday demand modeling
+- [ ] Multi-location inventory optimization
 - [ ] A/B testing framework
-- [ ] API deployment (FastAPI)
 
-### Low Priority
-- [ ] Mobile app interface
-- [ ] Real-time data ingestion
-- [ ] Dashboard themes
-- [ ] Multi-language support
-
-**How to contribute:**
-1. Fork the repository
-2. Create feature branch (`git checkout -b feature/YourFeature`)
-3. Commit changes (`git commit -m 'Add YourFeature'`)
-4. Push to branch (`git push origin feature/YourFeature`)
-5. Open Pull Request
+**How to contribute:** fork, create a feature branch, make sure `pytest` passes, open a pull request.
 
 ---
 
 ## 📝 Citation
 
-If you use TrendFlow in your research, please cite:
 ```bibtex
 @software{trendflow2025,
   author = {Esra Eslem Savaş},
@@ -354,7 +359,7 @@ If you use TrendFlow in your research, please cite:
   year = {2025},
   publisher = {GitHub},
   url = {https://github.com/esraeslem/TrendFlow-AI},
-  note = {Integrates Facebook Prophet with Newsvendor Model for inventory optimization}
+  note = {Integrates Prophet with the Newsvendor Model for inventory optimization}
 }
 ```
 
@@ -362,59 +367,50 @@ If you use TrendFlow in your research, please cite:
 
 ## 📧 Contact
 
-**Author:** Esra Eslem Savaş  
-**Email:** eslem.savas@metu.edu.tr  
-**LinkedIn:** www.linkedin.com/in/esra-eslem-savaş-b49980247 
+**Author:** Esra Eslem Savaş
+**Email:** eslem.savas@metu.edu.tr
+**LinkedIn:** www.linkedin.com/in/esra-eslem-savaş-b49980247
 **Institution:** Middle East Technical University (METU), Department of Statistics
 
 ### Acknowledgments
 
 - METU Statistics Department for academic support
 - METU Artificial Intelligence Club for feedback and testing
-- Facebook Research for the Prophet library
-- All contributors and collaborators
+- Meta's Core Data Science team for the Prophet library
 
 ---
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-**TL;DR:** You can freely use, modify, and distribute this software for academic or commercial purposes, with attribution.
+MIT License - see [LICENSE](LICENSE).
 
 ---
 
 ## ⚠️ Disclaimer
 
-**Academic Research Project**: This is a research prototype developed for academic purposes. Results are based on synthetic data. For production deployment, validate on real-world data and consult domain experts.
-
-**Not Financial Advice**: This software is provided for research and educational purposes only. We are not liable for business decisions made using this tool.
+**Research prototype.** Benchmark results are based on synthetic data. Validate on real data and consult domain experts before using this for business decisions. Provided for research and educational purposes only.
 
 ---
 
 ## 📊 Project Status
 
-- ✅ **Core Implementation** - Complete
-- ✅ **Dashboard Interface** - Complete
-- ✅ **Synthetic Data Generation** - Complete
-- ✅ **Baseline Comparisons** - Complete
-- 🚧 **Real-world Validation** - In Progress
-- 🚧 **Paper Writing** - In Progress
-- ⏳ **API Deployment** - Planned
-- ⏳ **Mobile App** - Planned
+- ✅ **Core implementation** (`src/`): forecasting, newsvendor optimisation, baselines, metrics
+- ✅ **Dashboards**: Streamlit (English and Turkish)
+- ✅ **REST API**: FastAPI, with Dockerfile
+- ✅ **Reproducible benchmark**: accuracy, interval calibration, per-product economics, censored demand
+- ✅ **H&M pipeline**: tested on H&M-format data, real-data results pending
+- ✅ **CI**: lint, tests, Docker build
+- 🚧 **Real-world results** (H&M, Favorita): scripts ready, need the Kaggle downloads
+- 🚧 **Paper writing**
 
-**Last Updated:** December 2025
+**Last Updated:** October 2026
 
 ---
 
 <div align="center">
-
-**Star ⭐ this repository if you find it useful!**
 
 Made with ❤️ at METU
 
 [Report Bug](https://github.com/esraeslem/TrendFlow-AI/issues) • [Request Feature](https://github.com/esraeslem/TrendFlow-AI/issues)
 
 </div>
-
-
