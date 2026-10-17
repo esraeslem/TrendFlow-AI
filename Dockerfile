@@ -1,24 +1,15 @@
-# Use an official Python runtime as a parent image
-FROM python:3.9-slim
+FROM python:3.11-slim
 
-
-# Set the working directory in the container
 WORKDIR /app
 
-# Copy the requirements file into the container at /app
 COPY requirements.txt .
-
-# Install any needed packages specified in requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the rest of the working directory contents into the container at /app
 COPY . .
 
-# Make port 8501 available to the world outside this container (Streamlit)
-EXPOSE 8501
+# 8501: Streamlit dashboard, 8000: FastAPI
+EXPOSE 8501 8000
 
-# Make port 8000 available for FastAPI
-EXPOSE 8000
-
-# Run streamlit when the container launches
+# Default: dashboard. For the API run:
+#   docker run -p 8000:8000 trendflow-ai uvicorn api:app --host 0.0.0.0 --port 8000
 CMD ["streamlit", "run", "dashboard.py", "--server.port=8501", "--server.address=0.0.0.0"]

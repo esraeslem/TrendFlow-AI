@@ -1,1 +1,14 @@
-# Paste .dockerignore content here
+.git
+.github
+__pycache__/
+*.py[cod]
+.pytest_cache/
+venv/
+env/
+.venv/
+notebooks/
+research_modules/
+experiments/results/decisions.csv
+*.zip
+train.csv
+.env

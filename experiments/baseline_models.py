@@ -1,36 +1,9 @@
-"""
-Baseline models for comparison with TrendFlow.
+"""Baseline forecasters used in ``run_benchmark.py``.
 
-Implements:
-1. Naive Forecasting (last week = this week)
-2. Moving Average (simple, weighted, exponential)
-3. ARIMA (classical time-series)
-4. LSTM (deep learning baseline)
-5. Prophet without optimization (accuracy-only)
+Implementations live in ``src/baselines.py``; re-exported here for backwards compatibility.
 """
 
-import pandas as pd
-import numpy as np
-from sklearn.metrics import mean_absolute_error, mean_squared_error
-from statsmodels.tsa.arima.model import ARIMA
+from src.baselines import (ARIMAForecaster, MovingAverageForecaster, NaiveForecaster,
+                           SeasonalNaiveForecaster)
 
-class NaiveForecaster:
-    """Last observation carried forward."""
-    def fit(self, y):
-        self.last_value = y.iloc[-1]
-        
-    def predict(self, steps):
-        return [self.last_value] * steps
-
-class MovingAverageForecaster:
-    """Simple moving average."""
-    def __init__(self, window=7):
-        self.window = window
-        
-    def fit(self, y):
-        self.ma = y.rolling(window=self.window).mean().iloc[-1]
-        
-    def predict(self, steps):
-        return [self.ma] * steps
-
-# Add ARIMA, LSTM, etc.
+__all__ = ["NaiveForecaster", "MovingAverageForecaster", "SeasonalNaiveForecaster", "ARIMAForecaster"]
