@@ -372,7 +372,7 @@ Operations Research + Machine Learning + Fashion Retail
 
 **Author:** Esra Eslem Savaş
 **Email:** eslem.savas@metu.edu.tr
-**LinkedIn:** www.linkedin.com/in/esra-eslem-savaş-b49980247
+**LinkedIn:** https://www.linkedin.com/in/esra-eslem-savas-b49980247
 **Institution:** Middle East Technical University (METU), Department of Statistics
 
 ### Acknowledgments
